@@ -1,5 +1,8 @@
 package com.sirius.web.repository;
 
-public interface UserRepository {
+import com.sirius.web.model.User;
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+public interface UserRepository extends MongoRepository<User,String> {
 
 }
