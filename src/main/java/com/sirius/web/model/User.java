@@ -5,22 +5,19 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.HashMap;
+import java.io.Serializable;
 
-@Document
+@Document(collection = "user")
 @Getter
 @Setter
-public class User {
+public class User implements Serializable {
     @Id
     private String id;
-    private String name;
-    private String surname;
+    private String password;
+    private String name; //firstName
+    private String surname; //lastName
     private String email;
     private float balance;
-    private boolean type;
-    private String password;
-
-    private HashMap properties;
-
+    private boolean type; // 0:admin 1:user
 
 }
