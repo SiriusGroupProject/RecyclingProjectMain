@@ -1,15 +1,13 @@
 package com.sirius.web.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 
 @Document(collection = "user")
-@Getter
-@Setter
+@Data
 public class User implements Serializable {
     @Id
     private String email;
@@ -17,6 +15,6 @@ public class User implements Serializable {
     private String name;
     private String surname;
     private float balance;
-    private boolean isAdmin; // 0:user 1:admin
+    private boolean isAdmin;
 
 }

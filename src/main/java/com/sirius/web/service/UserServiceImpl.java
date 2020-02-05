@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User deleteUser(String email, User user) {
         final User dbuser = this.authenticate(user.getEmail(), user.getPassword());
-        if(dbuser == null){
+        if(dbuser== null || dbuser.getEmail().equals(email) == false){
             throw new RuntimeException("Wrong User");
         }
         userRepository.deleteById(email);
