@@ -10,12 +10,12 @@ public interface UserService {
 
     User createUser(User user);
 
-    User findUserById(String id);
+    User findUserByEmail(String email);
 
-    User updateUser(String id, User user);
+    User updateUser(String email, User user);
 
-    User deleteUser(String id, User user);
+    User deleteUser(String email, User user);
 
-    User authenticate(String id, String password);
+    User authenticate(String email, String password);
 
 }

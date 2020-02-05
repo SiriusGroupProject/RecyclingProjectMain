@@ -30,29 +30,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findUserById(String id) {
-        return userRepository.findById(id).orElse(null);
+    public User findUserByEmail(String email) {
+        return userRepository.findById(email).orElse(null);
     }
 
     @Override
-    public User updateUser(String id, User user) {
-        User existingUser = userRepository.findById(id).orElse(null);
+    public User updateUser(String email, User user) {
+        User existingUser = userRepository.findById(email).orElse(null);
         BeanUtils.copyProperties(user, existingUser);
         return userRepository.save(existingUser);
     }
 
     @Override
-    public User deleteUser(String id, User user) {
-        final User dbuser = this.authenticate(user.getId(), user.getPassword());
+    public User deleteUser(String email, User user) {
+        final User dbuser = this.authenticate(user.getEmail(), user.getPassword());
         if(dbuser == null){
             throw new RuntimeException("Wrong User");
         }
-        userRepository.deleteById(id);
+        userRepository.deleteById(email);
         return user;
     }
 
     @Override
-    public User authenticate(String id, String password) {
-        return userRepository.findByIdAndPassword(id, password);
+    public User authenticate(String email, String password) {
+        return userRepository.findByIdAndPassword(email, password);
     }
 }

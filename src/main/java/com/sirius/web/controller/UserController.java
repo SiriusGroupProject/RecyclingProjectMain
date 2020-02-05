@@ -42,10 +42,10 @@ public class UserController implements Serializable {
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable String id){
+    @GetMapping("/{email}")
+    public ResponseEntity<User> getUser(@PathVariable String email){
         try {
-            final User dbuser = userService.findUserById(id);
+            final User dbuser = userService.findUserByEmail(email);
             if(dbuser == null){
                 return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
             }
@@ -55,20 +55,20 @@ public class UserController implements Serializable {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody User user){
+    @PutMapping("/{email}")
+    public ResponseEntity<User> updateUser(@PathVariable String email, @RequestBody User user){
         try {
-            final User dbuser = userService.updateUser(id, user);
+            final User dbuser = userService.updateUser(email, user);
             return new ResponseEntity<User>(dbuser, HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<User>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<User> deleteUser(@PathVariable String id, @RequestBody User user){
+    @DeleteMapping("/{email}")
+    public ResponseEntity<User> deleteUser(@PathVariable String email, @RequestBody User user){
         try {
-            final User dbuser = userService.deleteUser(id, user);
+            final User dbuser = userService.deleteUser(email, user);
             return new ResponseEntity<User>(dbuser, HttpStatus.OK);
         } catch (RuntimeException e){
             return new ResponseEntity<User>(HttpStatus.UNAUTHORIZED);
