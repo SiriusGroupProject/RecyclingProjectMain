@@ -53,6 +53,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User authenticate(String email, String password) {
-        return userRepository.findByIdAndPassword(email, password);
+        return userRepository.findByEmailAndPassword(email, password);
     }
 }
