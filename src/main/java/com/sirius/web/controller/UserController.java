@@ -22,10 +22,10 @@ public class UserController implements Serializable {
     }
 
     @GetMapping("listUsers")
-    public ResponseEntity<List<User>> findAll(){
+    public ResponseEntity<List<User>> findAll() {
         final List<User> users = userService.getAllUsers();
 
-        if(users == null){
+        if (users == null) {
             return new ResponseEntity<List<User>>(HttpStatus.NOT_FOUND);
         }
 
@@ -33,48 +33,66 @@ public class UserController implements Serializable {
     }
 
     @PostMapping("addUser")
-    public ResponseEntity<User> createUser(@RequestBody User user){
-        try {
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+
+        if (user.getEmail() != null && user.getEmail().length() != 0 && !userService.exists(user.getEmail())) {
             final User dbuser = userService.createUser(user);
             return new ResponseEntity<User>(dbuser, HttpStatus.CREATED);
-        }catch (Exception e){
+        } else {
             return new ResponseEntity<User>(HttpStatus.BAD_REQUEST);
         }
+
     }
 
     @GetMapping("/{email}")
-    public ResponseEntity<User> getUser(@PathVariable String email){
+    public ResponseEntity<User> getUser(@PathVariable String email) {
         try {
             final User dbuser = userService.findUserByEmail(email);
-            if(dbuser == null){
+            if (dbuser == null) {
                 return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<User>(dbuser, HttpStatus.OK);
-        }catch (Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @PutMapping("/{email}")
-    public ResponseEntity<User> updateUser(@PathVariable String email, @RequestBody User user){
-        try {
-            final User dbuser = userService.updateUser(email, user);
-            return new ResponseEntity<User>(dbuser, HttpStatus.OK);
-        }catch (Exception e){
+    @PutMapping("updateUser")
+    public ResponseEntity<User> updateUser(@RequestBody User user) {
+
+        final boolean isExist = userService.exists(user.getEmail());
+        if (isExist) {
+            userService.updateUser(user);
+            return new ResponseEntity<User>(user, HttpStatus.OK);
+        } else {
             return new ResponseEntity<User>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    @DeleteMapping("/{email}")
-    public ResponseEntity<User> deleteUser(@PathVariable String email, @RequestBody User user){
+    @DeleteMapping("deleteUser")
+    public ResponseEntity deleteUser(@RequestParam String email){
         try {
-            final User dbuser = userService.deleteUser(email, user);
-            return new ResponseEntity<User>(dbuser, HttpStatus.OK);
+            boolean ok = userService.deleteUser(email);
+            return new ResponseEntity(ok, HttpStatus.OK);
         } catch (RuntimeException e){
-            return new ResponseEntity<User>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity(false, HttpStatus.UNAUTHORIZED);
         } catch (Exception e){
-            return new ResponseEntity<User>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(false, HttpStatus.BAD_REQUEST);
         }
     }
 
+    @DeleteMapping("deleteAll")
+    public ResponseEntity deleteAll() {
+        boolean ok = userService.deleteAll();
+        return new ResponseEntity(ok, HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("login")
+    public boolean loginUser(@RequestParam String email, @RequestParam String password) {
+        User dbuser = userService.authenticate(email, password);
+       if(dbuser == null) {
+           return false;
+       }
+       return true;
+    }
 }

@@ -12,9 +12,13 @@ public interface UserService {
 
     User findUserByEmail(String email);
 
-    User updateUser(String email, User user);
+    User updateUser(User user);
 
-    User deleteUser(String email, User user);
+    boolean deleteUser(String email);
+
+    boolean deleteAll();
+
+    boolean exists(String email);
 
     User authenticate(String email, String password);
 

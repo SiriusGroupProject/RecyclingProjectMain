@@ -2,7 +2,6 @@ package com.sirius.web.service;
 
 import com.sirius.web.model.User;
 import com.sirius.web.repository.UserRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,20 +34,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(String email, User user) {
-        User existingUser = userRepository.findById(email).orElse(null);
-        BeanUtils.copyProperties(user, existingUser);
-        return userRepository.save(existingUser);
+    public User updateUser(User user) {
+        return userRepository.save(user);
     }
 
     @Override
-    public User deleteUser(String email, User user) {
-        final User dbuser = this.authenticate(user.getEmail(), user.getPassword());
-        if(dbuser== null || dbuser.getEmail().equals(email) == false){
+    public boolean deleteUser(String email) {
+        final User dbuser = this.authenticate(findUserByEmail(email).getEmail(), findUserByEmail(email).getPassword());
+        if(dbuser == null){
             throw new RuntimeException("Wrong User");
         }
         userRepository.deleteById(email);
-        return user;
+        return true;
+    }
+
+    @Override
+    public boolean deleteAll() {
+        userRepository.deleteAll();
+        return true;
+    }
+
+    @Override
+    public boolean exists(String email) {
+        return userRepository.existsById(email);
     }
 
     @Override

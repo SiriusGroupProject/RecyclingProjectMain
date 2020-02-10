@@ -15,6 +15,6 @@ public class User implements Serializable {
     private String name;
     private String surname;
     private float balance;
-    private boolean isAdmin;
+    private boolean admin;
 
 }
