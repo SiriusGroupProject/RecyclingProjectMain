@@ -12,7 +12,7 @@ public class Automat implements Serializable {
     @Id
     private String id;
     private float capacity;
-    private boolean isActive;
+    private boolean active;
     private int numberOfBottles ;
     private Location  location;
 
