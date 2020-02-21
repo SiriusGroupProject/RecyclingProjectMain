@@ -2,7 +2,6 @@ package com.sirius.web.service;
 
 import com.sirius.web.model.Automat;
 import com.sirius.web.repository.AutomatRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,23 +34,29 @@ public class AutomatServiceImpl implements AutomatService {
     }
 
     @Override
-    public Automat updateAutomat(String id, Automat automat) {
-        Automat existingAutomat = automatRepository.findById(id).orElse(null);
-        BeanUtils.copyProperties(automat, existingAutomat);
-        return automatRepository.save(existingAutomat);
+    public Automat updateAutomat(Automat automat) {
+        return automatRepository.save(automat);
     }
 
     @Override
-    public Automat deleteAutomat(String id) {
-
-        Automat existingAutomat = automatRepository.findById(id).orElse(null);
-
-        if(existingAutomat == null){
-            throw new RuntimeException("Wrong User");
+    public boolean deleteAutomat(String id) {
+        final Automat dbautomat = findAutomatById(id);
+        if(dbautomat == null){
+            throw new RuntimeException("Automat not found");
         }
         automatRepository.deleteById(id);
-        return existingAutomat;
+        return true;
     }
 
+    @Override
+    public boolean deleteAll() {
+        automatRepository.deleteAll();
+        return true;
+    }
+
+    @Override
+    public boolean exists(String id) {
+        return automatRepository.existsById(id);
+    }
 
 }
