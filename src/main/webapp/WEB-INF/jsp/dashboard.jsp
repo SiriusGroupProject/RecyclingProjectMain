@@ -1,4 +1,7 @@
 <%@ page import="java.util.List" %>
+<%@ page import="com.sirius.web.model.Automat" %>
+<%@ page import="com.sirius.web.service.AutomatService" %>
+<%@ page import="com.sirius.web.utils.AutomatClient" %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -24,14 +27,14 @@
 
 <body class="">
     <div class="wrapper ">
-        <div class="sidebar" data-color="purple" data-background-color="white" data-image="img/sidebar-1.jpg">
+        <div class="sidebar" data-color="green" data-background-color="white" data-image="img/sidebar-1.jpg">
             <!--
               Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
               Tip 2: you can also add an image using data-image tag
           -->
             <div class="logo">
                 <a href="/dashboard" class="simple-text logo-normal">
-                    Sirius
+                    Recycling Project
                 </a>
             </div>
             <div class="sidebar-wrapper">
@@ -40,18 +43,6 @@
                         <a class="nav-link" href="/dashboard">
                             <i class="material-icons">dashboard</i>
                             <p>Dashboard</p>
-                        </a>
-                    </li>
-                    <li class="nav-item ">
-                        <a class="nav-link" href="/userProfile">
-                            <i class="material-icons">person</i>
-                            <p>User Profile</p>
-                        </a>
-                    </li>
-                    <li class="nav-item ">
-                        <a class="nav-link" href="/addRecipe">
-                            <i class="material-icons">add</i>
-                            <p>Add Recipe</p>
                         </a>
                     </li>
                 </ul>
@@ -92,7 +83,7 @@
                                     </p>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
-                                    <a class="dropdown-item" href="/">Log out</a>
+                                    <a class="dropdown-item" data-color="green" href="/">Log out</a>
                                 </div>
                             </li>
                         </ul>
@@ -100,6 +91,88 @@
                 </div>
             </nav>
             <!-- End Navbar -->
+
+            <div class="content">
+                <div class="container-fluid">
+                    <div class="row">
+
+                        <%
+                            List<Automat> automatList = AutomatClient.listAutomats();
+                            for (int i = 0; i < automatList.size(); i++) {
+                                if (i % 3 == 0)
+                                    out.println("<div class=\"col-md-4\">\n" +
+                                            "                        <div class=\"card card-chart\">\n" +
+                                            "                            <div class=\"card-header card-header-success\">\n" +
+                                            /*"                                <div class=\"ct-chart\" id=\"websiteViewsChart\"></div>\n" +*/
+                                            "                            </div>\n" +
+                                            "                            <div class=\"card-body\">\n" +
+                                            "                    <a class=\"nav-link\" href=\"/automatDetails?automatId="+automatList.get(i).getId()+"\">\n" +
+                                            "                                <h4 class=\"card-title\">\n" +
+                                            automatList.get(i).getId() +
+                                            "                                </h4>\n" +
+                                            "                    </a>\n" +
+                                            "                                <p class=\"card-category\">\n" +
+                                            automatList.get(i).getNumberOfBottles() +
+                                            "                                </p>\n" +
+                                            "                            </div>\n" +
+                                            "                            <div class=\"card-footer\">\n" +
+                                            "                                <div class=\"stats\">\n" +
+                                            "                                    <i class=\"material-icons\">access_time</i> " + automatList.get(i).isActive() + "\n" +
+                                            "                                </div>\n" +
+                                            "                            </div>\n" +
+                                            "                        </div>\n" +
+                                            "                    </div>" + "");
+                                else if (i % 3 == 1)
+                                    out.println("<div class=\"col-md-4\">\n" +
+                                            "                        <div class=\"card card-chart\">\n" +
+                                            "                            <div class=\"card-header card-header-warning\">\n" +
+                                            /*"                                <div class=\"ct-chart\" id=\"websiteViewsChart\"></div>\n" +*/
+                                            "                            </div>\n" +
+                                            "                            <div class=\"card-body\">\n" +
+                                            "                    <a class=\"nav-link\" href=\"/automatDetails?automatId="+automatList.get(i).getId()+"\">\n" +
+                                            "                                <h4 class=\"card-title\">\n" +
+                                            automatList.get(i).getId() +
+                                            "                                </h4>\n" +
+                                            "                    </a>\n" +
+                                            "                                <p class=\"card-category\">\n" +
+                                            automatList.get(i).getNumberOfBottles() +
+                                            "                                </p>\n" +
+                                            "                            </div>\n" +
+                                            "                            <div class=\"card-footer\">\n" +
+                                            "                                <div class=\"stats\">\n" +
+                                            "                                    <i class=\"material-icons\">access_time</i> " + automatList.get(i).isActive() + "\n" +
+                                            "                                </div>\n" +
+                                            "                            </div>\n" +
+                                            "                        </div>\n" +
+                                            "                    </div>" + "");
+                                else
+                                    out.println("<div class=\"col-md-4\">\n" +
+                                            "                        <div class=\"card card-chart\">\n" +
+                                            "                            <div class=\"card-header card-header-danger\">\n" +
+                                            /*"                                <div class=\"ct-chart\" id=\"websiteViewsChart\"></div>\n" +*/
+                                            "                            </div>\n" +
+                                            "                            <div class=\"card-body\">\n" +
+                                            "                    <a class=\"nav-link\" href=\"/automatDetails?automatId="+automatList.get(i).getId()+"\">\n" +
+                                            "                                <h4 class=\"card-title\">\n" +
+                                            automatList.get(i).getId() +
+                                            "                                </h4>\n" +
+                                            "                    </a>\n" +
+                                            "                                <p class=\"card-category\">\n" +
+                                            automatList.get(i).getNumberOfBottles() +
+                                            "                                </p>\n" +
+                                            "                            </div>\n" +
+                                            "                            <div class=\"card-footer\">\n" +
+                                            "                                <div class=\"stats\">\n" +
+                                            "                                    <i class=\"material-icons\">access_time</i> " + automatList.get(i).isActive() + "\n" +
+                                            "                                </div>\n" +
+                                            "                            </div>\n" +
+                                            "                        </div>\n" +
+                                            "                    </div>" + "");
+                            }
+                        %>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="fixed-plugin">
