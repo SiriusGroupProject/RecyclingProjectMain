@@ -45,12 +45,6 @@
                             <p>Dashboard</p>
                         </a>
                     </li>
-                    <li class="nav-item ">
-                        <a class="nav-link" href="/userSettings">
-                            <i class="material-icons">person</i>
-                            <p>Settings</p>
-                        </a>
-                    </li>
                 </ul>
             </div>
         </div>
@@ -89,7 +83,7 @@
                                     </p>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
-                                    <a class="dropdown-item" href="/">Log out</a>
+                                    <a class="dropdown-item" data-color="green" href="/">Log out</a>
                                 </div>
                             </li>
                         </ul>
