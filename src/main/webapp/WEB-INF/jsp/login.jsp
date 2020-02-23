@@ -43,7 +43,6 @@
 					<span class="login100-form-title">
 						Admin Login
 					</span>
-
                 <div class="wrap-input100 validate-input" data-validate="Valid username is required: username">
                     <input class="input100" type="text" name="username" placeholder="Username">
                     <span class="focus-input100"></span>
