@@ -19,36 +19,42 @@ public class BottleServiceImpl implements BottleService {
     
     @Override
     public List<Bottle> getAllBottles() {
-        return null;
+        return bottleRepository.findAll();
     }
 
     @Override
     public Bottle createBottle(Bottle bottle) {
-        return null;
+        return bottleRepository.save(bottle);
     }
 
     @Override
     public Bottle findBottleById(String id) {
-        return null;
+        return bottleRepository.findById(id).orElse(null);
     }
 
     @Override
     public Bottle updateBottle(Bottle bottle) {
-        return null;
+        return bottleRepository.save(bottle);
     }
 
     @Override
     public boolean deleteBottle(String id) {
-        return false;
+        final Bottle dbBottle = findBottleById(id);
+        if(dbBottle == null){
+            throw new RuntimeException("Bottle not found");
+        }
+        bottleRepository.deleteById(id);
+        return true;
     }
 
     @Override
     public boolean deleteAll() {
-        return false;
+        bottleRepository.deleteAll();
+        return true;
     }
 
     @Override
     public boolean exists(String id) {
-        return true;
+        return bottleRepository.existsById(id);
     }
 }
