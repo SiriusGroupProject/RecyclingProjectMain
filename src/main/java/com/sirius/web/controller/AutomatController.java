@@ -22,10 +22,10 @@ public class AutomatController implements Serializable {
     }
 
     @GetMapping("listAutomats")
-    public ResponseEntity<List<Automat>> findAll(){
+    public ResponseEntity<List<Automat>> findAll() {
         final List<Automat> automats = automatService.getAllAutomats();
 
-        if(automats == null){
+        if(automats == null) {
             return new ResponseEntity<List<Automat>>(HttpStatus.NOT_FOUND);
         }
 
@@ -33,48 +33,57 @@ public class AutomatController implements Serializable {
     }
 
     @PostMapping("addAutomat")
-    public ResponseEntity<Automat> createAutomat(@RequestBody Automat automat){
-        try {
+    public ResponseEntity<Automat> createAutomat(@RequestBody Automat automat) {
+
+        if (automat.getId() != null && automat.getId().length() != 0 && !automatService.exists(automat.getId())) {
             final Automat dbautomat = automatService.createAutomat(automat);
             return new ResponseEntity<Automat>(dbautomat, HttpStatus.CREATED);
-        }catch (Exception e){
+        } else {
             return new ResponseEntity<Automat>(HttpStatus.BAD_REQUEST);
         }
+
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Automat> getUser(@PathVariable String id){
+    public ResponseEntity<Automat> getAutomat(@PathVariable String id) {
         try {
             final Automat dbautomat = automatService.findAutomatById(id);
-            if(dbautomat == null){
+            if (dbautomat == null) {
                 return new ResponseEntity<Automat>(HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<Automat>(dbautomat, HttpStatus.OK);
-        }catch (Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<Automat>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Automat> updateUser(@PathVariable String id, @RequestBody Automat automat){
-        try {
-            final Automat dbautomat = automatService.updateAutomat(id, automat);
-            return new ResponseEntity<Automat>(dbautomat, HttpStatus.OK);
-        }catch (Exception e){
+    @PutMapping("updateAutomat")
+    public ResponseEntity<Automat> updateAutomat(@RequestBody Automat automat) {
+
+        final boolean isExist = automatService.exists(automat.getId());
+        if (isExist) {
+            automatService.updateAutomat(automat);
+            return new ResponseEntity<Automat>(automat, HttpStatus.OK);
+        } else {
             return new ResponseEntity<Automat>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Automat> deleteUser(@PathVariable String id){
+    @DeleteMapping("deleteAutomat")
+    public ResponseEntity deleteAutomat(@RequestParam String id){
         try {
-            final Automat dbautomat = automatService.deleteAutomat(id);
-            return new ResponseEntity<Automat>(dbautomat, HttpStatus.OK);
+            boolean ok = automatService.deleteAutomat(id);
+            return new ResponseEntity(ok, HttpStatus.OK);
         } catch (RuntimeException e){
-            return new ResponseEntity<Automat>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity(false, HttpStatus.UNAUTHORIZED);
         } catch (Exception e){
-            return new ResponseEntity<Automat>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(false, HttpStatus.BAD_REQUEST);
         }
     }
 
+    @DeleteMapping("deleteAll")
+    public ResponseEntity deleteAll() {
+        boolean ok = automatService.deleteAll();
+        return new ResponseEntity(ok, HttpStatus.NO_CONTENT);
+    }
 }
