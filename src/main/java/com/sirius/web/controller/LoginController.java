@@ -1,6 +1,7 @@
 package com.sirius.web.controller;
 import com.sirius.web.model.User;
 import com.sirius.web.service.UserService;
+import com.sirius.web.utils.HashingForPassword;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 @Controller
@@ -17,9 +19,10 @@ public class LoginController {
     private UserService userService;
 
     @RequestMapping("logincontrol")
-    public String control(@RequestParam String username, @RequestParam String password, HttpServletRequest request) {
-        User dbuser = userService.authenticate(username, password);
-        if (dbuser != null){
+    public String control(@RequestParam String username, @RequestParam String password, HttpServletRequest request) throws NoSuchAlgorithmException {
+        String hashedPassword = HashingForPassword.hash(password);
+        boolean dbUserIsExist = userService.authenticate(username, hashedPassword);
+        if (dbUserIsExist){
             return "logincontrol";
         }
         else {

@@ -20,6 +20,6 @@ public interface UserService {
 
     boolean exists(String email);
 
-    User authenticate(String email, String password);
+    boolean authenticate(String email, String password);
 
 }
