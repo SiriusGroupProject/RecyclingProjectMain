@@ -35,7 +35,7 @@ public class BottleController implements Serializable {
     @PostMapping("addBottle")
     public ResponseEntity<Bottle> createBottle(@RequestBody Bottle bottle) {
 
-        if (bottle.getId() != null && bottle.getId().length() != 0 && !bottleService.exists(bottle.getId())) {
+        if (bottle.getBarcode() != null && bottle.getBarcode().length() != 0 && !bottleService.exists(bottle.getBarcode())) {
             final Bottle dbBottle = bottleService.createBottle(bottle);
             return new ResponseEntity<Bottle>(dbBottle, HttpStatus.CREATED);
         } else {
@@ -44,10 +44,10 @@ public class BottleController implements Serializable {
 
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Bottle> getBottle(@PathVariable String id) {
+    @GetMapping("/{barcode}")
+    public ResponseEntity<Bottle> getBottle(@PathVariable String barcode) {
         try {
-            final Bottle dbBottle = bottleService.findBottleById(id);
+            final Bottle dbBottle = bottleService.findBottleByBarcode(barcode);
             if (dbBottle == null) {
                 return new ResponseEntity<Bottle>(HttpStatus.NOT_FOUND);
             }
@@ -60,7 +60,7 @@ public class BottleController implements Serializable {
     @PutMapping("updateBottle")
     public ResponseEntity<Bottle> updateBottle(@RequestBody Bottle bottle) {
 
-        final boolean isExist = bottleService.exists(bottle.getId());
+        final boolean isExist = bottleService.exists(bottle.getBarcode());
         if (isExist) {
             bottleService.updateBottle(bottle);
             return new ResponseEntity<Bottle>(bottle, HttpStatus.OK);
@@ -70,9 +70,9 @@ public class BottleController implements Serializable {
     }
 
     @DeleteMapping("deleteBottle")
-    public ResponseEntity deleteBottle(@RequestParam String id){
+    public ResponseEntity deleteBottle(@RequestParam String barcode){
         try {
-            boolean ok = bottleService.deleteBottle(id);
+            boolean ok = bottleService.deleteBottle(barcode);
             return new ResponseEntity(ok, HttpStatus.OK);
         } catch (RuntimeException e){
             return new ResponseEntity(false, HttpStatus.UNAUTHORIZED);

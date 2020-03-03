@@ -10,9 +10,8 @@ import java.io.Serializable;
 @Data
 public class Bottle implements Serializable {
     @Id
-    private String id;
-    private String name;
     private String barcode;
+    private String name;
     private String type;
     private float price;
     private float volume;
