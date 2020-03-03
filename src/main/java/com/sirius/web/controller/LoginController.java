@@ -19,9 +19,8 @@ public class LoginController {
     private UserService userService;
 
     @RequestMapping("logincontrol")
-    public String control(@RequestParam String username, @RequestParam String password, HttpServletRequest request) throws NoSuchAlgorithmException {
-        String hashedPassword = HashingForPassword.hash(password);
-        boolean dbUserIsExist = userService.authenticate(username, hashedPassword);
+    public String control(@RequestParam String username, @RequestParam String password, HttpServletRequest request) {
+        boolean dbUserIsExist = userService.authenticate(username, password);
         if (dbUserIsExist){
             return "logincontrol";
         }
