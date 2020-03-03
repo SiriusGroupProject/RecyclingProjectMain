@@ -28,8 +28,8 @@ public class BottleServiceImpl implements BottleService {
     }
 
     @Override
-    public Bottle findBottleById(String id) {
-        return bottleRepository.findById(id).orElse(null);
+    public Bottle findBottleByBarcode(String bottle) {
+        return bottleRepository.findById(bottle).orElse(null);
     }
 
     @Override
@@ -38,12 +38,12 @@ public class BottleServiceImpl implements BottleService {
     }
 
     @Override
-    public boolean deleteBottle(String id) {
-        final Bottle dbBottle = findBottleById(id);
+    public boolean deleteBottle(String bottle) {
+        final Bottle dbBottle = findBottleByBarcode(bottle);
         if(dbBottle == null){
             throw new RuntimeException("Bottle not found");
         }
-        bottleRepository.deleteById(id);
+        bottleRepository.deleteById(bottle);
         return true;
     }
 
@@ -54,7 +54,7 @@ public class BottleServiceImpl implements BottleService {
     }
 
     @Override
-    public boolean exists(String id) {
-        return bottleRepository.existsById(id);
+    public boolean exists(String bottle) {
+        return bottleRepository.existsById(bottle);
     }
 }

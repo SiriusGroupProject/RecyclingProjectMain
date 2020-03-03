@@ -10,14 +10,14 @@ public interface BottleService {
 
     Bottle createBottle(Bottle bottle);
 
-    Bottle findBottleById(String id);
+    Bottle findBottleByBarcode(String barcode);
 
     Bottle updateBottle(Bottle bottle);
 
-    boolean deleteBottle(String id);
+    boolean deleteBottle(String barcode);
 
     boolean deleteAll();
 
-    boolean exists(String id);
+    boolean exists(String barcode);
 
 }
