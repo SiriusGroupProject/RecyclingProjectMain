@@ -3,8 +3,6 @@ package com.sirius.web.service;
 import com.sirius.web.model.User;
 import com.sirius.web.repository.UserRepository;
 import com.sirius.web.utils.HashingForPassword;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +12,6 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserRepository userRepository;
 
     @Autowired
