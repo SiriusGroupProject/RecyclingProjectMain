@@ -1,9 +1,6 @@
 package com.sirius.web.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("connection")
@@ -30,5 +27,15 @@ public class ConnectionServer {
             return scannedBarcode;
         else
             return "";
+    }
+
+    @PostMapping("closeConnection/{userId}")
+    public String closeConnection(@PathVariable String userId) {
+        if (userId.equals(connectedUser)) {
+            connectedUser = "";
+            return "Closed";
+        } else
+            return "";
+
     }
 }
