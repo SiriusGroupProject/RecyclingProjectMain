@@ -102,4 +102,15 @@ public class UserController implements Serializable {
        }
        return true;
     }
+
+    @PutMapping("updateBalance/{email}/{balance}")
+    public boolean updateBalance(@PathVariable("email") String email, @PathVariable("balance")String balance){
+        User dbUser = userService.findUserByEmail(email);
+        if(dbUser == null) {
+            return false;
+        }
+        dbUser.setBalance(dbUser.getBalance()+ Float.parseFloat(balance));
+        userService.updateUser(dbUser);
+        return true;
+    }
 }
