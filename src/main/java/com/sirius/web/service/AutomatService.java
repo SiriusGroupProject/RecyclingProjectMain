@@ -12,8 +12,12 @@ public interface AutomatService {
 
     Automat findAutomatById(String id);
 
-    Automat updateAutomat(String id, Automat automat);
+    Automat updateAutomat(Automat automat);
 
-    Automat deleteAutomat(String id);
+    boolean deleteAutomat(String id);
+
+    boolean deleteAll();
+
+    boolean exists(String id);
 
 }

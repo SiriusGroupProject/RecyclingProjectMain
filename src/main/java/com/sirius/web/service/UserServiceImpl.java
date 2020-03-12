@@ -2,9 +2,11 @@ package com.sirius.web.service;
 
 import com.sirius.web.model.User;
 import com.sirius.web.repository.UserRepository;
+import com.sirius.web.utils.HashingForPassword;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @Service
@@ -40,12 +42,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean deleteUser(String email) {
-        final User dbuser = this.authenticate(findUserByEmail(email).getEmail(), findUserByEmail(email).getPassword());
-        if(dbuser == null){
-            throw new RuntimeException("Wrong User");
+        boolean dbUserIsExist = exists(email);
+        if(dbUserIsExist) {
+            userRepository.deleteById(email);
+            return true;
         }
-        userRepository.deleteById(email);
-        return true;
+        return false;
     }
 
     @Override
@@ -60,7 +62,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User authenticate(String email, String password) {
-        return userRepository.findByEmailAndPassword(email, password);
+    public boolean authenticate(String email, String password) {
+        try {
+            String hashedPassword = HashingForPassword.hash(password);
+            User dbUser = userRepository.findByEmailAndPassword(email, hashedPassword);
+            if (dbUser != null) {
+                return true;
+            }
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return false;
     }
 }

@@ -2,12 +2,14 @@ package com.sirius.web.controller;
 
 import com.sirius.web.model.User;
 import com.sirius.web.service.UserService;
+import com.sirius.web.utils.HashingForPassword;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @RestController
@@ -33,9 +35,12 @@ public class UserController implements Serializable {
     }
 
     @PostMapping("addUser")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@RequestBody User user) throws NoSuchAlgorithmException {
 
         if (user.getEmail() != null && user.getEmail().length() != 0 && !userService.exists(user.getEmail())) {
+            String encpassword = HashingForPassword.hash(user.getPassword());
+            user.setPassword(encpassword);
+
             final User dbuser = userService.createUser(user);
             return new ResponseEntity<User>(dbuser, HttpStatus.CREATED);
         } else {
@@ -58,10 +63,12 @@ public class UserController implements Serializable {
     }
 
     @PutMapping("updateUser")
-    public ResponseEntity<User> updateUser(@RequestBody User user) {
+    public ResponseEntity<User> updateUser(@RequestBody User user) throws NoSuchAlgorithmException {
 
         final boolean isExist = userService.exists(user.getEmail());
         if (isExist) {
+            String hashedPassword = HashingForPassword.hash(user.getPassword());
+            user.setPassword(hashedPassword);
             userService.updateUser(user);
             return new ResponseEntity<User>(user, HttpStatus.OK);
         } else {
@@ -89,10 +96,21 @@ public class UserController implements Serializable {
 
     @GetMapping("login")
     public boolean loginUser(@RequestParam String email, @RequestParam String password) {
-        User dbuser = userService.authenticate(email, password);
-       if(dbuser == null) {
+        boolean dbUserIsExist = userService.authenticate(email, password);
+       if(!dbUserIsExist) {
            return false;
        }
        return true;
+    }
+
+    @PutMapping("updateBalance/{email}/{balance}")
+    public boolean updateBalance(@PathVariable("email") String email, @PathVariable("balance")String balance){
+        User dbUser = userService.findUserByEmail(email);
+        if(dbUser == null) {
+            return false;
+        }
+        dbUser.setBalance(dbUser.getBalance()+ Float.parseFloat(balance));
+        userService.updateUser(dbUser);
+        return true;
     }
 }
