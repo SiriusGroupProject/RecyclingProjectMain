@@ -1,7 +1,9 @@
 package com.sirius.web.controller;
 
 import com.sirius.web.model.Automat;
+import com.sirius.web.model.Bottle;
 import com.sirius.web.service.AutomatService;
+import com.sirius.web.service.BottleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +17,12 @@ import java.util.List;
 public class AutomatController implements Serializable {
 
     private final AutomatService automatService;
+    private final BottleService bottleService;
 
     @Autowired
-    public AutomatController(AutomatService automatService) {
+    public AutomatController(AutomatService automatService, BottleService bottleService) {
         this.automatService = automatService;
+        this.bottleService = bottleService;
     }
 
     @GetMapping("listAutomats")
@@ -85,5 +89,33 @@ public class AutomatController implements Serializable {
     public ResponseEntity deleteAll() {
         boolean ok = automatService.deleteAll();
         return new ResponseEntity(ok, HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("changeCapacity/{id}/{barcode}")
+    public ResponseEntity changeCapacity(@PathVariable String id, @PathVariable String barcode) {
+        boolean isDbAutomat = automatService.exists(id);
+        boolean isDbBottle = bottleService.exists(barcode);
+
+        if (isDbAutomat == false || isDbBottle == false) {
+            return new ResponseEntity(false, HttpStatus.BAD_REQUEST);
+        }
+        else {
+            Automat getAutomatFromDb = automatService.findAutomatById(id);
+            Bottle getBottleFromDb = bottleService.findBottleByBarcode(barcode);
+
+            getAutomatFromDb.setNumberOfBottles(getAutomatFromDb.getNumberOfBottles() + 1);
+            getAutomatFromDb.setCapacity(getAutomatFromDb.getCapacity() -
+                    ( (getBottleFromDb.getVolume()/getAutomatFromDb.getOverallVolume()) * 100) );
+
+            if(getAutomatFromDb.getCapacity() <= 100.00) {
+                automatService.updateAutomat(getAutomatFromDb);
+                return new ResponseEntity(true, HttpStatus.OK);
+            }
+            else {
+                getAutomatFromDb.setActive(false);
+                automatService.updateAutomat(getAutomatFromDb);
+                return new ResponseEntity(false, HttpStatus.BAD_REQUEST);
+            }
+        }
     }
 }

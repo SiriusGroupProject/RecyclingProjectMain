@@ -11,6 +11,7 @@ import java.io.Serializable;
 public class Automat implements Serializable {
     @Id
     private String id;
+    private float overallVolume;
     private float capacity;
     private boolean active;
     private int numberOfBottles ;
