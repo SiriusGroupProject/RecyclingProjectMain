@@ -104,8 +104,18 @@ public class AutomatController implements Serializable {
             Bottle getBottleFromDb = bottleService.findBottleByBarcode(barcode);
 
             getAutomatFromDb.setNumberOfBottles(getAutomatFromDb.getNumberOfBottles() + 1);
-            getAutomatFromDb.setCapacity(getAutomatFromDb.getCapacity() + getBottleFromDb.getVolume());
-            return new ResponseEntity(true, HttpStatus.OK);
+            getAutomatFromDb.setCapacity(getAutomatFromDb.getCapacity() -
+                    ( (getBottleFromDb.getVolume()/getAutomatFromDb.getOverallVolume()) * 100) );
+
+            if(getAutomatFromDb.getCapacity() <= 100.00) {
+                automatService.updateAutomat(getAutomatFromDb);
+                return new ResponseEntity(true, HttpStatus.OK);
+            }
+            else {
+                getAutomatFromDb.setActive(false);
+                automatService.updateAutomat(getAutomatFromDb);
+                return new ResponseEntity(false, HttpStatus.BAD_REQUEST);
+            }
         }
     }
 }
