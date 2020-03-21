@@ -93,6 +93,7 @@ public class AutomatController implements Serializable {
 
     @PutMapping("changeCapacity/{id}/{barcode}")
     public ResponseEntity changeCapacity(@PathVariable String id, @PathVariable String barcode) {
+
         boolean isDbAutomat = automatService.exists(id);
         boolean isDbBottle = bottleService.exists(barcode);
 
@@ -102,6 +103,10 @@ public class AutomatController implements Serializable {
         else {
             Automat getAutomatFromDb = automatService.findAutomatById(id);
             Bottle getBottleFromDb = bottleService.findBottleByBarcode(barcode);
+
+            if(getAutomatFromDb.isActive()) {
+                return new ResponseEntity(false, HttpStatus.BAD_REQUEST);
+            }
 
             getAutomatFromDb.setNumberOfBottles(getAutomatFromDb.getNumberOfBottles() + 1);
             getAutomatFromDb.setCapacity(getAutomatFromDb.getCapacity() -
