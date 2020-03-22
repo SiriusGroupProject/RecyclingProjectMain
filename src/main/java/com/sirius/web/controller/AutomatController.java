@@ -97,7 +97,7 @@ public class AutomatController implements Serializable {
         boolean isDbAutomat = automatService.exists(id);
         boolean isDbBottle = bottleService.exists(barcode);
 
-        if (isDbAutomat == false || isDbBottle == false) {
+        if (!isDbAutomat || !isDbBottle) {
             return new ResponseEntity(false, HttpStatus.BAD_REQUEST);
         }
         else {
