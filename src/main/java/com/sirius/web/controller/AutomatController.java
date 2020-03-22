@@ -104,7 +104,7 @@ public class AutomatController implements Serializable {
             Automat getAutomatFromDb = automatService.findAutomatById(id);
             Bottle getBottleFromDb = bottleService.findBottleByBarcode(barcode);
 
-            if(getAutomatFromDb.isActive()) {
+            if(!getAutomatFromDb.isActive()) {
                 return new ResponseEntity(false, HttpStatus.BAD_REQUEST);
             }
 
