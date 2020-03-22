@@ -113,7 +113,7 @@ public class ConnectionServer {
         Automat dbAutomat = automatService.findAutomatById(automatId);
 
         if(existsDbUser && existsDbAutomat && dbAutomat.getBaseConnection() != null && dbAutomat.isActive()) {
-            if(!dbAutomat.getBaseConnection().getConnectedUserId().equals(connectedUserId) || !dbAutomat.getBaseConnection().isAutomatIsAcceptUser()) {
+            if(!dbAutomat.getBaseConnection().getConnectedUserId().equals(connectedUserId) || !dbAutomat.getBaseConnection().isAutomatIsAcceptUser() || dbAutomat.getBaseConnection().getScannedBarcode().equals("")) {
                 return "";
             }
             dbAutomat.getBaseConnection().setAutomatIsAcceptBarcode(true);
