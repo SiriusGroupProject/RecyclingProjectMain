@@ -16,5 +16,6 @@ public class Automat implements Serializable {
     private boolean active;
     private int numberOfBottles ;
     private Location  location;
+    private BaseConnection  baseConnection;
 
 }

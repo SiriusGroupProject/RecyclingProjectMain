@@ -11,10 +11,10 @@ public class BaseConnection {
     private boolean automatIsAcceptBarcode;
 
     public BaseConnection(String connectedUserId, boolean automatIsAcceptUser, String scannedBarcode, boolean automatIsAcceptBarcode) {
-        connectedUserId = this.connectedUserId;
-        automatIsAcceptUser = this.automatIsAcceptUser;
-        scannedBarcode = this.scannedBarcode;
-        automatIsAcceptBarcode = this.automatIsAcceptBarcode;
+        this.connectedUserId = connectedUserId;
+        this.automatIsAcceptUser = automatIsAcceptUser;
+        this.scannedBarcode = scannedBarcode;
+        this.automatIsAcceptBarcode = automatIsAcceptBarcode;
     }
 
 }
