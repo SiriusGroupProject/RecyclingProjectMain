@@ -8,8 +8,6 @@ import com.sirius.web.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-
 @RestController
 @RequestMapping("connections")
 public class ConnectionServer {
@@ -26,18 +24,20 @@ public class ConnectionServer {
     }
 
     @PostMapping("connection/{userId}/{automatId}")
-    public boolean requestToConnect(@PathVariable String userId,
-                                    @PathVariable String automatId) {
+    public boolean requestToConnect(@PathVariable String userId, @PathVariable String automatId) {
 
         boolean existsDbUser = userService.exists(userId);
         boolean existsDbAutomat = automatService.exists(automatId);
+        if(!existsDbUser || !existsDbAutomat) {
+            return false;
+        }
 
         Automat dbAutomat = automatService.findAutomatById(automatId);
+        BaseConnection baseConn = dbAutomat.getBaseConnection();
 
-        if (existsDbUser && existsDbAutomat && dbAutomat.getBaseConnection() == null && dbAutomat.isActive()) {
-            BaseConnection baseConnection =
-                    new BaseConnection(userId,false, "", false);
-            dbAutomat.setBaseConnection(baseConnection);
+        if (baseConn == null && dbAutomat.isActive()) {
+            baseConn = new BaseConnection(userId,false, "", 2, 2);
+            dbAutomat.setBaseConnection(baseConn);
             automatService.updateAutomat(dbAutomat);
             return true;
         }
@@ -48,54 +48,57 @@ public class ConnectionServer {
     @GetMapping("getConnectedUser/{automatId}")
     public String getConnectedUser(@PathVariable String automatId) {
 
-        boolean existDbAutomat = automatService.exists(automatId);
+        boolean existsDbAutomat = automatService.exists(automatId);
+        if(!existsDbAutomat) {
+            return "";
+        }
 
         Automat dbAutomat = automatService.findAutomatById(automatId);
+        BaseConnection baseConn = dbAutomat.getBaseConnection();
 
-        if(existDbAutomat && dbAutomat.getBaseConnection() != null && dbAutomat.isActive()) {
-            dbAutomat.getBaseConnection().setAutomatIsAcceptUser(true);
+        if(baseConn != null && dbAutomat.isActive()) {
+            baseConn.setAutomatIsAcceptUser(true);
+            dbAutomat.setBaseConnection(baseConn);
             automatService.updateAutomat(dbAutomat);
-            return dbAutomat.getBaseConnection().getConnectedUserId();
+            return baseConn.getConnectedUserId();
         }
         return "";
     }
 
     @GetMapping("waitingForConnection/{userId}/{automatId}")
-    public boolean waitingForConnection(@PathVariable String userId,
-                                        @PathVariable String automatId) {
+    public boolean waitingForConnection(@PathVariable String userId, @PathVariable String automatId) {
 
         boolean existsDbUser = userService.exists(userId);
         boolean existsDbAutomat = automatService.exists(automatId);
+        if(!existsDbUser || !existsDbAutomat) {
+            return false;
+        }
 
         Automat dbAutomat = automatService.findAutomatById(automatId);
+        BaseConnection baseConn = dbAutomat.getBaseConnection();
 
-        if(existsDbUser && existsDbAutomat && dbAutomat.getBaseConnection() != null && dbAutomat.isActive()) {
-            if(!dbAutomat.getBaseConnection().getConnectedUserId().equals(userId)) {
-                return false;
-            }
-            return dbAutomat.getBaseConnection().isAutomatIsAcceptUser();
+        if(baseConn != null && dbAutomat.isActive() && baseConn.getConnectedUserId().equals(userId)) {
+            return baseConn.isAutomatIsAcceptUser();
         }
         return false;
     }
 
-
-    @CrossOrigin(origins = "http://localhost:5000")
     @PostMapping("forwardScannedBarcode/{connectedUserId}/{automatId}/{barcode}")
-    public boolean forwardScannedBarcode(@PathVariable("connectedUserId") String connectedUserId,
-                                    @PathVariable("automatId") String automatId,
-                                    @PathVariable("barcode") String barcode) {
+    public boolean forwardScannedBarcode(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode) {
 
         boolean existsDbUser = userService.exists(connectedUserId);
         boolean existsDbAutomat = automatService.exists(automatId);
         boolean existsDbBottle = bottleService.exists(barcode);
+        if(!existsDbUser || !existsDbAutomat || !existsDbBottle) {
+            return false;
+        }
 
         Automat dbAutomat = automatService.findAutomatById(automatId);
+        BaseConnection baseConn = dbAutomat.getBaseConnection();
 
-        if(existsDbUser && existsDbAutomat && existsDbBottle && dbAutomat.getBaseConnection() != null) {
-            if(!dbAutomat.getBaseConnection().getConnectedUserId().equals(connectedUserId) || !dbAutomat.getBaseConnection().isAutomatIsAcceptUser()) {
-                return false;
-            }
-            dbAutomat.getBaseConnection().setScannedBarcode(barcode);
+        if(baseConn != null && dbAutomat.isActive() && baseConn.getConnectedUserId().equals(connectedUserId) && baseConn.isAutomatIsAcceptUser()) {
+            baseConn.setScannedBarcode(barcode);
+            dbAutomat.setBaseConnection(baseConn);
             automatService.updateAutomat(dbAutomat);
             return true;
         }
@@ -104,53 +107,103 @@ public class ConnectionServer {
 
     @CrossOrigin(origins = "http://localhost:5000")
     @GetMapping("getScannedBarcode/{connectedUserId}/{automatId}")
-    public String getScannedBarcode(@PathVariable String connectedUserId,
-                                    @PathVariable String automatId) {
+    public String getScannedBarcode(@PathVariable String connectedUserId, @PathVariable String automatId) {
 
         boolean existsDbUser = userService.exists(connectedUserId);
         boolean existsDbAutomat = automatService.exists(automatId);
+        if(!existsDbUser && !existsDbAutomat) {
+            return "";
+        }
 
         Automat dbAutomat = automatService.findAutomatById(automatId);
+        BaseConnection baseConn = dbAutomat.getBaseConnection();
 
-        if(existsDbUser && existsDbAutomat && dbAutomat.getBaseConnection() != null && dbAutomat.isActive()) {
-            if(!dbAutomat.getBaseConnection().getConnectedUserId().equals(connectedUserId) || !dbAutomat.getBaseConnection().isAutomatIsAcceptUser() || dbAutomat.getBaseConnection().getScannedBarcode().equals("")) {
-                return "";
-            }
-            dbAutomat.getBaseConnection().setAutomatIsAcceptBarcode(true);
-            automatService.updateAutomat(dbAutomat);
-            return dbAutomat.getBaseConnection().getScannedBarcode();
+        if(baseConn != null && dbAutomat.isActive() && baseConn.getConnectedUserId().equals(connectedUserId) && baseConn.isAutomatIsAcceptUser()) {
+            return baseConn.getScannedBarcode();
         }
         return "";
     }
 
-    @GetMapping("waitingForScannedBarcode/{userId}/{automatId}")
-    public boolean waitingForScannedBarcode(@PathVariable String userId,
-                                            @PathVariable String automatId) {
-
-        boolean existsDbUser = userService.exists(userId);
-        boolean existsDbAutomat = automatService.exists(automatId);
-
-        Automat dbAutomat = automatService.findAutomatById(automatId);
-
-        if(existsDbUser && existsDbAutomat && dbAutomat.getBaseConnection() != null && dbAutomat.isActive()) {
-            if(!dbAutomat.getBaseConnection().getConnectedUserId().equals(userId) || !dbAutomat.getBaseConnection().isAutomatIsAcceptUser()) {
-                return false;
-            }
-            return dbAutomat.getBaseConnection().isAutomatIsAcceptBarcode();
-        }
-        return false;
-    }
-
     @CrossOrigin(origins = "http://localhost:5000")
-    @PostMapping("closeConnection/{automatId}")
-    public boolean closeConnection(@PathVariable String automatId) {
+    @PostMapping("bottleVerification/{connectedUserId}/{automatId}/{barcode}/{verified}")
+    public boolean bottleVerification(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode, @PathVariable int verified) {
+        boolean existsDbUser = userService.exists(connectedUserId);
+        boolean existsDbAutomat = automatService.exists(automatId);
+        boolean existsDbBottle = bottleService.exists(barcode);
+        if(!existsDbUser || !existsDbAutomat || !existsDbBottle) {
+            return false;
+        }
+
         Automat dbAutomat = automatService.findAutomatById(automatId);
-        if (dbAutomat != null && dbAutomat.getBaseConnection() != null) {
-            dbAutomat.setBaseConnection(null);
+        BaseConnection baseConn = dbAutomat.getBaseConnection();
+
+        if(baseConn != null && dbAutomat.isActive() && baseConn.getConnectedUserId().equals(connectedUserId) && baseConn.isAutomatIsAcceptUser() && !baseConn.getScannedBarcode().equals("")) {
+            baseConn.setVerified(verified);
+            dbAutomat.setBaseConnection(baseConn);
             automatService.updateAutomat(dbAutomat);
             return true;
         }
         return false;
+
+    }
+
+    @GetMapping("getBottleVerification/{connectedUserId}/{automatId}/{barcode}")
+    public int getBottleVerification(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode) {
+        boolean existsDbUser = userService.exists(connectedUserId);
+        boolean existsDbAutomat = automatService.exists(automatId);
+        boolean existsDbBottle = automatService.exists(barcode);
+        if(!existsDbUser && !existsDbAutomat && !existsDbBottle) {
+            return 2;
+        }
+
+        Automat dbAutomat = automatService.findAutomatById(automatId);
+        BaseConnection baseConn = dbAutomat.getBaseConnection();
+
+        if(baseConn != null && dbAutomat.isActive() && baseConn.getConnectedUserId().equals(connectedUserId) && baseConn.isAutomatIsAcceptUser() && !baseConn.getScannedBarcode().equals("")) {
+            return baseConn.getVerified();
+        }
+        return 2;
+    }
+
+    @CrossOrigin(origins = "http://localhost:5000")
+    @PostMapping("closeOrNewTransaction/{connectedUserId}/{automatId}/{barcode}/{verified}/{result}")
+    public int closeOrNewTransaction(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode,@PathVariable("verified") String verified, @PathVariable int result) {
+        boolean existsDbUser = userService.exists(connectedUserId);
+        boolean existsDbAutomat = automatService.exists(automatId);
+        boolean existsDbBottle = bottleService.exists(barcode);
+        if(!existsDbUser || !existsDbAutomat || !existsDbBottle) {
+            return 2;
+        }
+
+        Automat dbAutomat = automatService.findAutomatById(automatId);
+        BaseConnection baseConn = dbAutomat.getBaseConnection();
+
+        if(baseConn != null && dbAutomat.isActive() && baseConn.getConnectedUserId().equals(connectedUserId) && baseConn.isAutomatIsAcceptUser() && !baseConn.getScannedBarcode().equals("") && baseConn.getVerified() != 2) {
+            baseConn.setResult(result);
+            dbAutomat.setBaseConnection(baseConn);
+            automatService.updateAutomat(dbAutomat);
+            return baseConn.getResult();
+        }
+        return 2;
+
+    }
+
+    @GetMapping("getResult/connectedUserId}/{automatId}/{barcode}/{verified}")
+    public int getResult(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode, @PathVariable("verified") String verified) {
+        boolean existsDbUser = userService.exists(connectedUserId);
+        boolean existsDbAutomat = automatService.exists(automatId);
+        boolean existsDbBottle = automatService.exists(barcode);
+        if(!existsDbUser && !existsDbAutomat && !existsDbBottle) {
+            return 2;
+        }
+
+        Automat dbAutomat = automatService.findAutomatById(automatId);
+        BaseConnection baseConn = dbAutomat.getBaseConnection();
+
+        if(baseConn != null && dbAutomat.isActive() && baseConn.getConnectedUserId().equals(connectedUserId) && baseConn.isAutomatIsAcceptUser() && baseConn.getVerified() != 2) {
+            return baseConn.getResult();
+        }
+        return 2;
     }
 
 }

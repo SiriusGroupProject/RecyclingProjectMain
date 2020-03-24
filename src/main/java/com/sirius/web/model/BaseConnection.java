@@ -8,13 +8,16 @@ public class BaseConnection {
     private String connectedUserId;
     private boolean automatIsAcceptUser;
     private String scannedBarcode;
-    private boolean automatIsAcceptBarcode;
+    private int verified;
+    private int result;
 
-    public BaseConnection(String connectedUserId, boolean automatIsAcceptUser, String scannedBarcode, boolean automatIsAcceptBarcode) {
+    public BaseConnection(String connectedUserId, boolean automatIsAcceptUser, String scannedBarcode,
+                          int verified, int result) {
         this.connectedUserId = connectedUserId;
         this.automatIsAcceptUser = automatIsAcceptUser;
         this.scannedBarcode = scannedBarcode;
-        this.automatIsAcceptBarcode = automatIsAcceptBarcode;
+        this.verified = verified; //<0,1,2> !!! 0:not verified 1:verified 2:not yet answered
+        this.result = result; //<0,1,2,3> !!! 0:close connection 1:new transaction 2:no choice yet 3:continue processing with the same bottle
     }
 
 }
