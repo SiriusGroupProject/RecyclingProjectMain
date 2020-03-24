@@ -8,8 +8,8 @@
 
 <%
     HttpSession session1 = request.getSession();
-    String username = request.getParameter("username");
-    session1.setAttribute("username", username);
+    String username = request.getParameter("email");
+    session1.setAttribute("email", username);
     String password = request.getParameter("password");
     session1.setAttribute("password", password);
     response.sendRedirect("/dashboard");
