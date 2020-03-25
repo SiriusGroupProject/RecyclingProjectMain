@@ -158,7 +158,7 @@ public class ConnectionServer {
 
     @CrossOrigin(origins = "http://localhost:5000")
     @PostMapping("closeOrNewTransaction/{connectedUserId}/{automatId}/{barcode}/{verified}/{result}")
-    public boolean closeOrNewTransaction(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode,@PathVariable("verified") String verified, @PathVariable int result) {
+    public boolean closeOrNewTransaction(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode,@PathVariable("verified") int verified, @PathVariable int result) {
         boolean isDB = isExistsDb(connectedUserId, automatId, barcode);
         if (!isDB) {
             return false;
@@ -167,7 +167,7 @@ public class ConnectionServer {
         Automat dbAutomat = automatService.findAutomatById(automatId);
         BaseConnection baseConn = dbAutomat.getBaseConnection();
 
-        if(baseConn != null && dbAutomat.isActive() && baseConn.getConnectedUserId().equals(connectedUserId) && baseConn.isAutomatIsAcceptUser() && !baseConn.getScannedBarcode().equals("") && baseConn.getVerified() != 2) {
+        if(baseConn != null && dbAutomat.isActive() && baseConn.getConnectedUserId().equals(connectedUserId) && baseConn.isAutomatIsAcceptUser() && !baseConn.getScannedBarcode().equals("") && baseConn.getVerified() == verified && baseConn.getVerified() != 2) {
             baseConn.setResult(result);
             dbAutomat.setBaseConnection(baseConn);
             automatService.updateAutomat(dbAutomat);
@@ -178,7 +178,7 @@ public class ConnectionServer {
     }
 
     @GetMapping("getResult/{connectedUserId}/{automatId}/{barcode}")
-    public int getResult(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode) {
+    public int getResult(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode, @PathVariable("verified") int verified) {
         boolean isDB = isExistsDb(connectedUserId, automatId, barcode);
         if (!isDB) {
             return 2;
@@ -187,7 +187,7 @@ public class ConnectionServer {
         Automat dbAutomat = automatService.findAutomatById(automatId);
         BaseConnection baseConn = dbAutomat.getBaseConnection();
 
-        if(baseConn != null && dbAutomat.isActive() && baseConn.getConnectedUserId().equals(connectedUserId) && baseConn.isAutomatIsAcceptUser() && !baseConn.getScannedBarcode().equals("") && baseConn.getVerified() != 2) {
+        if(baseConn != null && dbAutomat.isActive() && baseConn.getConnectedUserId().equals(connectedUserId) && baseConn.isAutomatIsAcceptUser() && !baseConn.getScannedBarcode().equals("") && baseConn.getVerified() == verified && baseConn.getVerified() != 2) {
             int tempResult = baseConn.getResult();
             BaseConnection newBS;
 
@@ -219,7 +219,7 @@ public class ConnectionServer {
         return 2;
     }
 
-    public boolean isExistsDb(String... args) {
+    private boolean isExistsDb(String... args) {
         switch (args.length) {
             case 1 :
                 return automatService.exists(args[0]);
