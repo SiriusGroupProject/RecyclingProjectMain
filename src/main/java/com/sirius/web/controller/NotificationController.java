@@ -22,16 +22,21 @@ public class NotificationController {
     @Autowired
     AndroidPushNotificationsService androidPushNotificationsService;
 
-    @RequestMapping(value = "/send/{subAdminArea}", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<String> send(@PathVariable String subAdminArea) throws JSONException {
+    @RequestMapping(value = "/send/{subAdminArea}/{activateOrAdd}", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<String> send(@PathVariable String subAdminArea,@PathVariable String activateOrAdd) throws JSONException {
 
+        JSONObject notification = new JSONObject();
+        if(activateOrAdd.equals("activate")){
+            notification.put("title", "Yeni Aktif Otomat");
+            notification.put("body", "Lokasyonunuza yakin bir otomat yeniden aktif hale geldi.");
+        }
+        else{
+            notification.put("title", "Yeni Otomat Eklendi");
+            notification.put("body", "Lokasyonunuza yakin yeni bir otomat eklendi.");
+        }
         JSONObject body = new JSONObject();
         body.put("to", "/topics/" + subAdminArea);
         body.put("priority", "high");
-
-        JSONObject notification = new JSONObject();
-        notification.put("title", "yeni bildirim"); // todo
-        notification.put("body", "bildirim");
 
         JSONObject data = new JSONObject();
         data.put("Key-1", "JSA Data 1");
