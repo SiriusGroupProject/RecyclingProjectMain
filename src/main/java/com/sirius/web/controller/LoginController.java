@@ -19,10 +19,14 @@ public class LoginController {
     private UserService userService;
 
     @RequestMapping("logincontrol")
-    public String control(@RequestParam String username, @RequestParam String password, HttpServletRequest request) {
-        boolean dbUserIsExist = userService.authenticate(username, password);
+    public String control(@RequestParam String email, @RequestParam String password, HttpServletRequest request) {
+        boolean dbUserIsExist = userService.authenticate(email, password);
         if (dbUserIsExist){
-            return "logincontrol";
+            User user = userService.findUserByEmail(email);
+            if (user.isAdmin())
+                return "logincontrol";
+            else
+                return "redirect:/?errNo=2";
         }
         else {
             return "redirect:/?errNo=1";

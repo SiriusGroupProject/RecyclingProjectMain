@@ -1,4 +1,3 @@
-<%@ page import="com.sirius.web.model.SessionManagement" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,14 +36,14 @@
                 if (Msg == 1)
                     alert("Kullanici adi/parola yanlis");
                 else if (Msg == 2)
-                    alert("Boyle bir kullanici bulunmamaktadir.");
+                    alert("Lutfen admin yetkisi olan bir hesapla giris yapiniz.");
             </script>
             <form class="login100-form validate-form" action="logincontrol">
 					<span class="login100-form-title">
 						Admin Login
 					</span>
-                <div class="wrap-input100 validate-input" data-validate="Valid username is required: username">
-                    <input class="input100" type="text" name="username" placeholder="Username">
+                <div class="wrap-input100 validate-input" data-validate="Valid email is required: email">
+                    <input class="input100" type="text" name="email" placeholder="Email">
                     <span class="focus-input100"></span>
                     <span class="symbol-input100">
 							<i class="fas fa-user-alt" aria-hidden="true"></i>
