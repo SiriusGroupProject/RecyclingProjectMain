@@ -158,10 +158,10 @@ public class ConnectionServer {
 
     @CrossOrigin(origins = "http://localhost:5000")
     @PostMapping("closeOrNewTransaction/{connectedUserId}/{automatId}/{barcode}/{verified}/{result}")
-    public int closeOrNewTransaction(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode,@PathVariable("verified") String verified, @PathVariable int result) {
+    public boolean closeOrNewTransaction(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode,@PathVariable("verified") String verified, @PathVariable int result) {
         boolean isDB = isExistsDb(connectedUserId, automatId, barcode);
         if (!isDB) {
-            return 2;
+            return false;
         }
 
         Automat dbAutomat = automatService.findAutomatById(automatId);
@@ -171,9 +171,9 @@ public class ConnectionServer {
             baseConn.setResult(result);
             dbAutomat.setBaseConnection(baseConn);
             automatService.updateAutomat(dbAutomat);
-            return baseConn.getResult();
+            return true;
         }
-        return 2;
+        return false;
 
     }
 
