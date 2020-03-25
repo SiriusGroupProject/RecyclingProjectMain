@@ -188,8 +188,8 @@ public class ConnectionServer {
 
     }
 
-    @GetMapping("getResult/connectedUserId}/{automatId}/{barcode}/{verified}")
-    public int getResult(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode, @PathVariable("verified") String verified) {
+    @GetMapping("getResult/{connectedUserId}/{automatId}/{barcode}")
+    public int getResult(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode) {
         boolean existsDbUser = userService.exists(connectedUserId);
         boolean existsDbAutomat = automatService.exists(automatId);
         boolean existsDbBottle = automatService.exists(barcode);
@@ -200,10 +200,47 @@ public class ConnectionServer {
         Automat dbAutomat = automatService.findAutomatById(automatId);
         BaseConnection baseConn = dbAutomat.getBaseConnection();
 
-        if(baseConn != null && dbAutomat.isActive() && baseConn.getConnectedUserId().equals(connectedUserId) && baseConn.isAutomatIsAcceptUser() && baseConn.getVerified() != 2) {
+        if(baseConn != null && dbAutomat.isActive() && baseConn.getConnectedUserId().equals(connectedUserId) && baseConn.isAutomatIsAcceptUser() && !baseConn.getScannedBarcode().equals("") && baseConn.getVerified() != 2) {
             return baseConn.getResult();
         }
         return 2;
     }
 
+    @GetMapping("setBC/{automatId}/{result}")
+    public boolean set(@PathVariable("automatId") String automatId, @PathVariable("result") int result) {
+        Automat dbAutomat = automatService.findAutomatById(automatId);
+        if(dbAutomat == null || dbAutomat.getBaseConnection() == null) {
+            return false;
+        }
+
+        BaseConnection baseConn = dbAutomat.getBaseConnection();
+        BaseConnection newBS;
+
+        switch (result) {
+            case 0 :
+                dbAutomat.setBaseConnection(null);
+                break;
+
+            case 1 :
+                newBS = new BaseConnection(baseConn.getConnectedUserId(), baseConn.isAutomatIsAcceptUser(),
+                        "", 2, 2);
+                dbAutomat.setBaseConnection(newBS);
+                break;
+
+            case 2 :
+                return false;
+
+            case 3 :
+                newBS = new BaseConnection(baseConn.getConnectedUserId(), baseConn.isAutomatIsAcceptUser(),
+                        baseConn.getScannedBarcode(), 2, 2);
+                dbAutomat.setBaseConnection(newBS);
+                break;
+
+            default :
+                return false;
+        }
+        automatService.updateAutomat(dbAutomat);
+        return true;
+    }
 }
+
