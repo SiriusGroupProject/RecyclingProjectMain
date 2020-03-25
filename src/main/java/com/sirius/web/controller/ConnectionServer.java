@@ -207,7 +207,7 @@ public class ConnectionServer {
     }
 
     @GetMapping("setBC/{automatId}/{result}")
-    public boolean set(@PathVariable("automatId") String automatId, @PathVariable("result") int result) {
+    public boolean setBC(@PathVariable("automatId") String automatId, @PathVariable("result") int result) {
         Automat dbAutomat = automatService.findAutomatById(automatId);
         if(dbAutomat == null || dbAutomat.getBaseConnection() == null) {
             return false;
