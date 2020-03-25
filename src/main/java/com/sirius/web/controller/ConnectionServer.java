@@ -177,7 +177,7 @@ public class ConnectionServer {
 
     }
 
-    @GetMapping("getResult/{connectedUserId}/{automatId}/{barcode}")
+    @GetMapping("getResult/{connectedUserId}/{automatId}/{barcode}/{verified}")
     public int getResult(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode, @PathVariable("verified") int verified) {
         boolean isDB = isExistsDb(connectedUserId, automatId, barcode);
         if (!isDB) {
