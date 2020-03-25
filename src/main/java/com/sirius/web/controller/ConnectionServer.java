@@ -26,9 +26,8 @@ public class ConnectionServer {
     @PostMapping("connection/{userId}/{automatId}")
     public boolean requestToConnect(@PathVariable String userId, @PathVariable String automatId) {
 
-        boolean existsDbUser = userService.exists(userId);
-        boolean existsDbAutomat = automatService.exists(automatId);
-        if(!existsDbUser || !existsDbAutomat) {
+        boolean isDB = isExistsDb(userId, automatId);
+        if (!isDB) {
             return false;
         }
 
@@ -48,8 +47,8 @@ public class ConnectionServer {
     @GetMapping("getConnectedUser/{automatId}")
     public String getConnectedUser(@PathVariable String automatId) {
 
-        boolean existsDbAutomat = automatService.exists(automatId);
-        if(!existsDbAutomat) {
+        boolean isDB = isExistsDb(automatId);
+        if (!isDB) {
             return "";
         }
 
@@ -68,9 +67,8 @@ public class ConnectionServer {
     @GetMapping("waitingForConnection/{userId}/{automatId}")
     public boolean waitingForConnection(@PathVariable String userId, @PathVariable String automatId) {
 
-        boolean existsDbUser = userService.exists(userId);
-        boolean existsDbAutomat = automatService.exists(automatId);
-        if(!existsDbUser || !existsDbAutomat) {
+        boolean isDB = isExistsDb(userId, automatId);
+        if (!isDB) {
             return false;
         }
 
@@ -86,10 +84,8 @@ public class ConnectionServer {
     @PostMapping("forwardScannedBarcode/{connectedUserId}/{automatId}/{barcode}")
     public boolean forwardScannedBarcode(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode) {
 
-        boolean existsDbUser = userService.exists(connectedUserId);
-        boolean existsDbAutomat = automatService.exists(automatId);
-        boolean existsDbBottle = bottleService.exists(barcode);
-        if(!existsDbUser || !existsDbAutomat || !existsDbBottle) {
+        boolean isDB = isExistsDb(connectedUserId, automatId, barcode);
+        if (!isDB) {
             return false;
         }
 
@@ -109,9 +105,8 @@ public class ConnectionServer {
     @GetMapping("getScannedBarcode/{connectedUserId}/{automatId}")
     public String getScannedBarcode(@PathVariable String connectedUserId, @PathVariable String automatId) {
 
-        boolean existsDbUser = userService.exists(connectedUserId);
-        boolean existsDbAutomat = automatService.exists(automatId);
-        if(!existsDbUser && !existsDbAutomat) {
+        boolean isDB = isExistsDb(connectedUserId, automatId);
+        if (!isDB) {
             return "";
         }
 
@@ -127,10 +122,8 @@ public class ConnectionServer {
     @CrossOrigin(origins = "http://localhost:5000")
     @PostMapping("bottleVerification/{connectedUserId}/{automatId}/{barcode}/{verified}")
     public boolean bottleVerification(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode, @PathVariable int verified) {
-        boolean existsDbUser = userService.exists(connectedUserId);
-        boolean existsDbAutomat = automatService.exists(automatId);
-        boolean existsDbBottle = bottleService.exists(barcode);
-        if(!existsDbUser || !existsDbAutomat || !existsDbBottle) {
+        boolean isDB = isExistsDb(connectedUserId, automatId, barcode);
+        if (!isDB) {
             return false;
         }
 
@@ -149,10 +142,8 @@ public class ConnectionServer {
 
     @GetMapping("getBottleVerification/{connectedUserId}/{automatId}/{barcode}")
     public int getBottleVerification(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode) {
-        boolean existsDbUser = userService.exists(connectedUserId);
-        boolean existsDbAutomat = automatService.exists(automatId);
-        boolean existsDbBottle = automatService.exists(barcode);
-        if(!existsDbUser && !existsDbAutomat && !existsDbBottle) {
+        boolean isDB = isExistsDb(connectedUserId, automatId, barcode);
+        if (!isDB) {
             return 2;
         }
 
@@ -168,10 +159,8 @@ public class ConnectionServer {
     @CrossOrigin(origins = "http://localhost:5000")
     @PostMapping("closeOrNewTransaction/{connectedUserId}/{automatId}/{barcode}/{verified}/{result}")
     public int closeOrNewTransaction(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode,@PathVariable("verified") String verified, @PathVariable int result) {
-        boolean existsDbUser = userService.exists(connectedUserId);
-        boolean existsDbAutomat = automatService.exists(automatId);
-        boolean existsDbBottle = bottleService.exists(barcode);
-        if(!existsDbUser || !existsDbAutomat || !existsDbBottle) {
+        boolean isDB = isExistsDb(connectedUserId, automatId, barcode);
+        if (!isDB) {
             return 2;
         }
 
@@ -190,10 +179,8 @@ public class ConnectionServer {
 
     @GetMapping("getResult/{connectedUserId}/{automatId}/{barcode}")
     public int getResult(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode) {
-        boolean existsDbUser = userService.exists(connectedUserId);
-        boolean existsDbAutomat = automatService.exists(automatId);
-        boolean existsDbBottle = automatService.exists(barcode);
-        if(!existsDbUser && !existsDbAutomat && !existsDbBottle) {
+        boolean isDB = isExistsDb(connectedUserId, automatId, barcode);
+        if (!isDB) {
             return 2;
         }
 
@@ -230,6 +217,22 @@ public class ConnectionServer {
             return tempResult;
         }
         return 2;
+    }
+
+    public boolean isExistsDb(String... args) {
+        switch (args.length) {
+            case 1 :
+                return automatService.exists(args[0]);
+
+            case 2 :
+                return userService.exists(args[0]) && automatService.exists(args[1]);
+
+            case 3 :
+                return userService.exists(args[0]) && automatService.exists(args[1]) && bottleService.exists(args[2]);
+
+            default :
+                return false;
+        }
     }
 }
 
