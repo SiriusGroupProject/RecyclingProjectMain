@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,16 +18,15 @@ import java.util.concurrent.ExecutionException;
 @RestController
 public class NotificationController {
 
-    public static String TOPIC = "a";
 
     @Autowired
     AndroidPushNotificationsService androidPushNotificationsService;
 
-    @RequestMapping(value = "/send", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<String> send() throws JSONException {
+    @RequestMapping(value = "/send/{subAdminArea}", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<String> send(@PathVariable String subAdminArea) throws JSONException {
 
         JSONObject body = new JSONObject();
-        body.put("to", "/topics/" + TOPIC);
+        body.put("to", "/topics/" + subAdminArea);
         body.put("priority", "high");
 
         JSONObject notification = new JSONObject();
@@ -39,21 +39,6 @@ public class NotificationController {
 
         body.put("notification", notification);
         body.put("data", data);
-
-/**
- {
- "notification": {
- "title": "JSA Notification",
- "body": "Happy Message!"
- },
- "data": {
- "Key-1": "JSA Data 1",
- "Key-2": "JSA Data 2"
- },
- "to": "/topics/JavaSampleApproach",
- "priority": "high"
- }
- */
 
         HttpEntity<String> request = new HttpEntity<>(body.toString());
 
