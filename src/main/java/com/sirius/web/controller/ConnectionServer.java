@@ -8,6 +8,8 @@ import com.sirius.web.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("connections")
 public class ConnectionServer {
@@ -217,6 +219,29 @@ public class ConnectionServer {
             return tempResult;
         }
         return 2;
+    }
+
+    @CrossOrigin(origins = "http://localhost:5000")
+    @PostMapping("directlyCloseConnection/{automatId}")
+    public boolean directlyCloseConnection(@PathVariable String automatId) {
+        Automat dbAutomat = automatService.findAutomatById(automatId);
+        if (dbAutomat != null && dbAutomat.getBaseConnection() != null) {
+            dbAutomat.setBaseConnection(null);
+            automatService.updateAutomat(dbAutomat);
+            return true;
+        }
+        return false;
+    }
+
+    @CrossOrigin(origins = "http://localhost:5000")
+    @PostMapping("closeAllConnection")
+    public boolean closeAllConnection() {
+        List<Automat> automats = automatService.getAllAutomats();
+        for (Automat automat : automats) {
+            automat.setBaseConnection(null);
+            automatService.updateAutomat(automat);
+        }
+        return true;
     }
 
     private boolean isExistsDb(String... args) {
