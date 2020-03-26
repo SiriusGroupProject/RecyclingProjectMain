@@ -8,6 +8,8 @@ import com.sirius.web.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("connections")
 public class ConnectionServer {
@@ -158,27 +160,27 @@ public class ConnectionServer {
 
     @CrossOrigin(origins = "http://localhost:5000")
     @PostMapping("closeOrNewTransaction/{connectedUserId}/{automatId}/{barcode}/{verified}/{result}")
-    public int closeOrNewTransaction(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode,@PathVariable("verified") String verified, @PathVariable int result) {
+    public boolean closeOrNewTransaction(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode,@PathVariable("verified") int verified, @PathVariable int result) {
         boolean isDB = isExistsDb(connectedUserId, automatId, barcode);
         if (!isDB) {
-            return 2;
+            return false;
         }
 
         Automat dbAutomat = automatService.findAutomatById(automatId);
         BaseConnection baseConn = dbAutomat.getBaseConnection();
 
-        if(baseConn != null && dbAutomat.isActive() && baseConn.getConnectedUserId().equals(connectedUserId) && baseConn.isAutomatIsAcceptUser() && !baseConn.getScannedBarcode().equals("") && baseConn.getVerified() != 2) {
+        if(baseConn != null && dbAutomat.isActive() && baseConn.getConnectedUserId().equals(connectedUserId) && baseConn.isAutomatIsAcceptUser() && !baseConn.getScannedBarcode().equals("") && baseConn.getVerified() == verified && baseConn.getVerified() != 2) {
             baseConn.setResult(result);
             dbAutomat.setBaseConnection(baseConn);
             automatService.updateAutomat(dbAutomat);
-            return baseConn.getResult();
+            return true;
         }
-        return 2;
+        return false;
 
     }
 
-    @GetMapping("getResult/{connectedUserId}/{automatId}/{barcode}")
-    public int getResult(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode) {
+    @GetMapping("getResult/{connectedUserId}/{automatId}/{barcode}/{verified}")
+    public int getResult(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode, @PathVariable("verified") int verified) {
         boolean isDB = isExistsDb(connectedUserId, automatId, barcode);
         if (!isDB) {
             return 2;
@@ -187,7 +189,7 @@ public class ConnectionServer {
         Automat dbAutomat = automatService.findAutomatById(automatId);
         BaseConnection baseConn = dbAutomat.getBaseConnection();
 
-        if(baseConn != null && dbAutomat.isActive() && baseConn.getConnectedUserId().equals(connectedUserId) && baseConn.isAutomatIsAcceptUser() && !baseConn.getScannedBarcode().equals("") && baseConn.getVerified() != 2) {
+        if(baseConn != null && dbAutomat.isActive() && baseConn.getConnectedUserId().equals(connectedUserId) && baseConn.isAutomatIsAcceptUser() && !baseConn.getScannedBarcode().equals("") && baseConn.getVerified() == verified && baseConn.getVerified() != 2) {
             int tempResult = baseConn.getResult();
             BaseConnection newBS;
 
@@ -219,7 +221,30 @@ public class ConnectionServer {
         return 2;
     }
 
-    public boolean isExistsDb(String... args) {
+    @CrossOrigin(origins = "http://localhost:5000")
+    @PostMapping("directlyCloseConnection/{automatId}")
+    public boolean directlyCloseConnection(@PathVariable String automatId) {
+        Automat dbAutomat = automatService.findAutomatById(automatId);
+        if (dbAutomat != null && dbAutomat.getBaseConnection() != null) {
+            dbAutomat.setBaseConnection(null);
+            automatService.updateAutomat(dbAutomat);
+            return true;
+        }
+        return false;
+    }
+
+    @CrossOrigin(origins = "http://localhost:5000")
+    @PostMapping("closeAllConnection")
+    public boolean closeAllConnection() {
+        List<Automat> automats = automatService.getAllAutomats();
+        for (Automat automat : automats) {
+            automat.setBaseConnection(null);
+            automatService.updateAutomat(automat);
+        }
+        return true;
+    }
+
+    private boolean isExistsDb(String... args) {
         switch (args.length) {
             case 1 :
                 return automatService.exists(args[0]);
