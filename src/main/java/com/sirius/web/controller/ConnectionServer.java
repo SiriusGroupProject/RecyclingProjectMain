@@ -214,27 +214,24 @@ public class ConnectionServer {
 
             switch (baseConn.getResult()) {
                 case 0 :
-                    dbAutomat.setBaseConnection(null);
-                    automatService.updateAutomat(dbAutomat);
+                    newBS = null;
                     break;
 
                 case 1 :
                     newBS = new BaseConnection(baseConn.getConnectedUserId(), baseConn.isAutomatIsAcceptUser(),
                             "", 2, 2, false);
-                    dbAutomat.setBaseConnection(newBS);
-                    automatService.updateAutomat(dbAutomat);
                     break;
 
                 case 3 :
                     newBS = new BaseConnection(baseConn.getConnectedUserId(), baseConn.isAutomatIsAcceptUser(),
                             baseConn.getScannedBarcode(), 2, 2, false);
-                    dbAutomat.setBaseConnection(newBS);
-                    automatService.updateAutomat(dbAutomat);
                     break;
 
                 default :
-                    break;
+                    return false;
             }
+            dbAutomat.setBaseConnection(newBS);
+            automatService.updateAutomat(dbAutomat);
             return true;
         }
 
