@@ -37,7 +37,7 @@ public class ConnectionServer {
         BaseConnection baseConn = dbAutomat.getBaseConnection();
 
         if (baseConn == null && dbAutomat.isActive()) {
-            baseConn = new BaseConnection(userId,false, "", 2, 2);
+            baseConn = new BaseConnection(userId,false, "", 2, 2, false);
             dbAutomat.setBaseConnection(baseConn);
             automatService.updateAutomat(dbAutomat);
             return true;
@@ -189,11 +189,30 @@ public class ConnectionServer {
         Automat dbAutomat = automatService.findAutomatById(automatId);
         BaseConnection baseConn = dbAutomat.getBaseConnection();
 
-        if(baseConn != null && dbAutomat.isActive() && baseConn.getConnectedUserId().equals(connectedUserId) && baseConn.isAutomatIsAcceptUser() && !baseConn.getScannedBarcode().equals("") && baseConn.getVerified() == verified && baseConn.getVerified() != 2) {
-            int tempResult = baseConn.getResult();
+        if(baseConn != null && dbAutomat.isActive() && baseConn.getConnectedUserId().equals(connectedUserId) && baseConn.isAutomatIsAcceptUser() && !baseConn.getScannedBarcode().equals("") && baseConn.getVerified() == verified && baseConn.getVerified() != 2 && baseConn.getResult() != 2) {
+            baseConn.setAndroidIsAcceptResult(true);
+            dbAutomat.setBaseConnection(baseConn);
+            automatService.updateAutomat(dbAutomat);
+            return baseConn.getResult();
+        }
+        return 2;
+    }
+
+    @CrossOrigin(origins = "http://localhost:5000")
+    @GetMapping("waitingForResult/{automatId}")
+    public boolean waitingForResult(@PathVariable String automatId) {
+        boolean isDB = isExistsDb(automatId);
+        if (!isDB) {
+            return false;
+        }
+
+        Automat dbAutomat = automatService.findAutomatById(automatId);
+        BaseConnection baseConn = dbAutomat.getBaseConnection();
+
+        if(baseConn != null && dbAutomat.isActive() && baseConn.isAutomatIsAcceptUser() && !baseConn.getScannedBarcode().equals("") && baseConn.getVerified() != 2 && baseConn.getResult() != 2 && baseConn.isAndroidIsAcceptResult()) {
             BaseConnection newBS;
 
-            switch (tempResult) {
+            switch (baseConn.getResult()) {
                 case 0 :
                     dbAutomat.setBaseConnection(null);
                     automatService.updateAutomat(dbAutomat);
@@ -201,14 +220,14 @@ public class ConnectionServer {
 
                 case 1 :
                     newBS = new BaseConnection(baseConn.getConnectedUserId(), baseConn.isAutomatIsAcceptUser(),
-                            "", 2, 2);
+                            "", 2, 2, false);
                     dbAutomat.setBaseConnection(newBS);
                     automatService.updateAutomat(dbAutomat);
                     break;
 
                 case 3 :
                     newBS = new BaseConnection(baseConn.getConnectedUserId(), baseConn.isAutomatIsAcceptUser(),
-                            baseConn.getScannedBarcode(), 2, 2);
+                            baseConn.getScannedBarcode(), 2, 2, false);
                     dbAutomat.setBaseConnection(newBS);
                     automatService.updateAutomat(dbAutomat);
                     break;
@@ -216,9 +235,10 @@ public class ConnectionServer {
                 default :
                     break;
             }
-            return tempResult;
+            return true;
         }
-        return 2;
+
+        return false;
     }
 
     @CrossOrigin(origins = "http://localhost:5000")
