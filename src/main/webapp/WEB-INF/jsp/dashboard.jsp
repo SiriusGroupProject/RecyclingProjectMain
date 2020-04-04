@@ -48,8 +48,14 @@
                     </li>
                     <li class="nav-item  ">
                         <a class="nav-link" href="/insertbottle">
-                            <i class="material-icons">insertbottle</i>
+                            <i class="material-icons">add</i>
                             <p>Sise Ekleme</p>
+                        </a>
+                    </li>
+                    <li class="nav-item  ">
+                        <a class="nav-link" href="/map">
+                            <i class="material-icons">map</i>
+                            <p>Rota Olustur</p>
                         </a>
                     </li>
                 </ul>
