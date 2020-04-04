@@ -27,6 +27,7 @@ public class AutomatClient {
             automat.setId(jsonobject.getString("id"));
             automat.setCapacity((float) jsonobject.getDouble("capacity"));
             automat.setActive(jsonobject.getBoolean("active"));
+            automat.setOverallVolume((float) jsonobject.getDouble("overallVolume"));
             automat.setNumberOfBottles(jsonobject.getInt("numberOfBottles"));
             try {
                 JSONObject locOj = jsonobject.getJSONObject("location");
