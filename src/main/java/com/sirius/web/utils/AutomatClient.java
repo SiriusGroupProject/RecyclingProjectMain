@@ -7,6 +7,7 @@ import java.util.List;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.sirius.web.model.Location;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -24,10 +25,23 @@ public class AutomatClient {
             JSONObject jsonobject = jsonarray.getJSONObject(i);
             Automat automat = new Automat();
             automat.setId(jsonobject.getString("id"));
-            automat.setCapacity((float)jsonobject.getDouble("capacity"));
+            automat.setCapacity((float) jsonobject.getDouble("capacity"));
             automat.setActive(jsonobject.getBoolean("active"));
+            automat.setOverallVolume((float) jsonobject.getDouble("overallVolume"));
             automat.setNumberOfBottles(jsonobject.getInt("numberOfBottles"));
-            //location will be inserted
+            try {
+                JSONObject locOj = jsonobject.getJSONObject("location");
+                Location location = new Location();
+                location.setProvince(locOj.getString("province"));
+                location.setDistrict(locOj.getString("district"));
+                location.setNeighborhood(locOj.getString("neighborhood"));
+                location.setLatitude((float)locOj.getDouble("latitude"));
+                location.setLongitude((float)locOj.getDouble("longitude"));
+                automat.setLocation(location);
+            }
+            catch (Exception e) {
+                System.out.println(e);
+            }
             automats.add(automat);
         }
         return automats;

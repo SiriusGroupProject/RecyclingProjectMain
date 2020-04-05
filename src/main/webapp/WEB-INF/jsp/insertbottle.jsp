@@ -1,6 +1,5 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.sirius.web.model.Automat" %>
-<%@ page import="com.sirius.web.model.Location" %>
 <%@ page import="com.sirius.web.service.AutomatService" %>
 <%@ page import="com.sirius.web.utils.AutomatClient" %>
 <!DOCTYPE html>
@@ -24,135 +23,131 @@
     <link href="css/material-dashboard.css?v=2.1.1" rel="stylesheet"/>
     <!-- CSS Just for demo purpose, don't include it in your project -->
     <link href="demo/demo.css" rel="stylesheet"/>
+
+    <!--===============================================================================================-->
+    <link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="css/util.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <!--===============================================================================================-->
+    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css'
+          integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
+
 </head>
 
 <body class="">
-    <div class="wrapper ">
-        <div class="sidebar" data-color="green" data-background-color="white" data-image="img/sidebar-1.jpg">
-            <!--
-              Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
-              Tip 2: you can also add an image using data-image tag
-          -->
-            <div class="logo">
-                <a href="/dashboard" class="simple-text logo-normal">
-                    Recycling Project
-                </a>
-            </div>
-            <div class="sidebar-wrapper">
-                <ul class="nav">
-                    <li class="nav-item active  ">
-                        <a class="nav-link" href="/dashboard">
-                            <i class="material-icons">dashboard</i>
-                            <p>Kontrol Paneli</p>
-                        </a>
-                    </li>
-                    <li class="nav-item  ">
-                        <a class="nav-link" href="/insertbottle">
-                            <i class="material-icons">add</i>
-                            <p>Sise Ekleme</p>
-                        </a>
-                    </li>
-                    <li class="nav-item  ">
-                        <a class="nav-link" href="/map">
-                            <i class="material-icons">map</i>
-                            <p>Rota Olustur</p>
-                        </a>
-                    </li>
-                </ul>
-            </div>
+<div class="wrapper ">
+    <div class="sidebar" data-color="green" data-background-color="white" data-image="img/sidebar-1.jpg">
+        <!--
+          Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
+          Tip 2: you can also add an image using data-image tag
+      -->
+        <div class="logo">
+            <a href="/dashboard" class="simple-text logo-normal">
+                Recycling Project
+            </a>
         </div>
-        <div class="main-panel" data-color="green">
-            <!-- Navbar -->
-            <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top " >
-                <div class="container-fluid">
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="navbar-toggler-icon icon-bar"></span>
-                        <span class="navbar-toggler-icon icon-bar"></span>
-                        <span class="navbar-toggler-icon icon-bar"></span>
-                    </button>
+        <div class="sidebar-wrapper">
+            <ul class="nav">
+                <li class="nav-item  ">
+                    <a class="nav-link" href="/dashboard">
+                        <i class="material-icons">dashboard</i>
+                        <p>Kontrol Paneli</p>
+                    </a>
+                </li>
+                <li class="nav-item active ">
+                    <a class="nav-link" href="/insertbottle">
+                        <i class="material-icons">add</i>
+                        <p>Sise Ekleme</p>
+                    </a>
+                </li>
+                <li class="nav-item  ">
+                    <a class="nav-link" href="/map">
+                        <i class="material-icons">map</i>
+                        <p>Rota Olustur</p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
 
-                    <div class="collapse navbar-collapse justify-content-end">
-                        <form class="navbar-form">
-                            <div class="input-group no-border">
-                                <form class="login100-form">
-                                    <input type="text" name="searchValue" class="form-control" placeholder="Search...">
-                                    <button type="submit" class="btn btn-white btn-round btn-just-icon">
-                                        <i class="material-icons">search</i>
-                                        <div class="ripple-container"></div>
-                                    </button>
-                                </form>
+    <div class="main-panel">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="navbar-toggler-icon icon-bar"></span>
+                    <span class="navbar-toggler-icon icon-bar"></span>
+                    <span class="navbar-toggler-icon icon-bar"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-end">
+                    <ul class="navbar-nav">
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" href="#pablo" id="navbarDropdownProfile" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                                <i class="material-icons">person</i>
+                                <p class="d-lg-none d-md-block">
+                                    Account
+                                </p>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
+                                <a class="dropdown-item" href="/">Log out</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="content">
+            <div class="container-fluid">
+                <div class="card" style="width: 60%; margin-left: 20%;">
+                    <div class="card-body">
+                        <form class="f1"  method='post' action='insertbottlecontrol'>
+                            <div class="wrap-input100 validate-input" style="width: 40%; margin-left: 30%; margin-top: 3%" data-validate="Barkod girilmesi gereklidir.">
+                                <input class="input100" type="text" name="barcode" placeholder="Urun Barkodu">
+                                <span class="focus-input100"></span>
+                                </span>
+                            </div>
+                            <div class="wrap-input100 validate-input" style="width: 40%; margin-left: 30%; margin-top: 3%" data-validate="Urun markasi girilmesi gereklidir.">
+                                <input class="input100" type="text" name="brand" placeholder="Urun Markasi">
+                                <span class="focus-input100"></span>
+                                </span>
+                            </div>
+                            <div class="wrap-input100 validate-input" style="width: 40%; margin-left: 30%; margin-top: 3%" data-validate="Urun tipi girilmesi gereklidir.">
+                                <input class="input100" type="text" name="type" placeholder="Urun Tipi">
+                                <span class="focus-input100"></span>
+                                </span>
+                            </div>
+                            <div class="wrap-input100 validate-input" style="width: 40%; margin-left: 30%; margin-top: 3%" data-validate="Urun fiyati girilmesi gereklidir.">
+                                <input class="input100" type="number" step="0.01" name="price" placeholder="Urun Fiyati">
+                                <span class="focus-input100"></span>
+                                </span>
+                            </div>
+                            <div class="wrap-input100 validate-input" style="width: 40%; margin-left: 30%; margin-top: 3%" data-validate="Urun hacmi girilmesi gereklidir.">
+                                <input class="input100" type="number" step="0.01" name="volume" placeholder="Urun Hacmi">
+                                <span class="focus-input100"></span>
+                                </span>
+                            </div>
+                            <div class="button-container" style="width: 40%; margin-left: 30%; margin-top: 3%; margin-bottom: 3%">
+                                <button class="login100-form-btn" type="submit">
+                                    Ekle
+                                </button>
                             </div>
                         </form>
-                        <ul class="navbar-nav" >
-                            <li class="nav-item dropdown" >
-                                <a class="nav-link" href="#pablo" id="navbarDropdownProfile"  data-toggle="dropdown"
-                                   aria-haspopup="true" aria-expanded="false">
-                                    <i class="material-icons">person</i>
-                                    <p class="d-lg-none d-md-block">
-                                        Account
-                                    </p>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
-                                    <a class="dropdown-item"  href="/">Log out</a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-            <!-- End Navbar -->
-
-            <div class="content">
-                <div class="container-fluid">
-                    <div class="row">
-
-                        <%
-                            String search = request.getParameter("searchValue");
-                            List<Automat> automatList = AutomatClient.listAutomats();
-                            for (int i = 0; i < automatList.size(); i++) {
-                                    String aktif = automatList.get(i).isActive() ? "Aktif" : "Aktif Degil";
-                                    String path = automatList.get(i).isActive() ? "images/circle-green-p.png" : "images/circle-red-p.png";
-                                    String adres = "";
-                                    Location location = automatList.get(i).getLocation();
-                                    if (location != null)
-                                        adres += location.getNeighborhood() + ", " + location.getDistrict() + ", " + location.getProvince();
-                                    if (search == null || search.equals("") || adres.toLowerCase().contains(search.toLowerCase())) {
-                                        out.println("<div class=\"col-md-4\">\n" +
-                                                "                        <div class=\"card card-chart\">\n" +
-                                                "                            <div class=\"card-header\" >\n" +
-                                                /*"                                <div class=\"ct-chart\" id=\"websiteViewsChart\"></div>\n" +*/
-                                                "                               <img style=\"display: block;\n" +
-                                                "                                   margin-left: auto;\n" +
-                                                "                                       margin-right: auto; margin-top: 20%; width=\"193\" height=\"130\" img src=\"images/recycle.jpg\"" + "\">\n" +
-                                                "                            </div>\n" +
-                                                "                            <div class=\"card-body\">\n" +
-                                                "                    <a class=\"nav-link\" href=\"/automatDetails?automatId=" + automatList.get(i).getId() + "\">\n" +
-                                                "                                <h4 class=\"card-title\">\n" +
-                                                "Otomat : " + automatList.get(i).getId() +
-                                                "                                </h4>\n" +
-                                                "                    </a>\n" +
-                                                "                                <p class=\"card-category\">\n" + "Toplam otomat kapasitesi : " +
-                                                automatList.get(i).getOverallVolume() +
-                                                "                                </p>\n" +
-                                                "                                <p class=\"card-category\">\n" + "Kullanilabilir otomat kapasitesi : %" +
-                                                automatList.get(i).getCapacity() +
-                                                "                                </p>\n" +
-                                                "                                <p class=\"card-category\">\n" + "Adres : " +
-                                                adres +
-                                                "                                </p>\n" +
-                                                "                            </div>\n" +
-                                                "                            <div class=\"card-footer\">\n" +
-                                                "                                <div class=\"stats\">\n" +
-                                                "                                    <img style=\"display: block; margin-right: 10px;width=\"20\" height=\"20\" img src=\"" + path +"\"> " + aktif + "\n" +
-                                                "                                </div>\n" +
-                                                "                            </div>\n" +
-                                                "                        </div>\n" +
-                                                "                    </div>" + "");
-                                    }
-                            }
-                        %>
                     </div>
                 </div>
             </div>
@@ -335,6 +330,6 @@
             });
         </script>
     </div>
+</div>
 </body>
-
 </html>

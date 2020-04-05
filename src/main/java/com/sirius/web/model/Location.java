@@ -4,7 +4,9 @@ import lombok.Data;
 
 @Data
 public class Location {
-    String neighborhood="";
-    String street="";
-    String no="";
+    String province;
+    String district;
+    String 	neighborhood;
+    float latitude;
+    float longitude;
 }
