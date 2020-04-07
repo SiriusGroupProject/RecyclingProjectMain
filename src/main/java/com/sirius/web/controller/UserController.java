@@ -35,7 +35,7 @@ public class UserController implements Serializable {
             logger.error("Kayitli kulanicilar listenemedi");
             return new ResponseEntity<List<User>>(HttpStatus.NOT_FOUND);
         }
-        logger.info("Kayitli kulanicilar listelendi");
+        logger.info("Kayitli kulanicilar listesi: " + users);
         return new ResponseEntity<List<User>>(users, HttpStatus.OK);
     }
 
@@ -47,7 +47,7 @@ public class UserController implements Serializable {
             user.setPassword(encpassword);
 
             final User dbuser = userService.createUser(user);
-            logger.info("Yeni kullanici olusturuldu. Kullanici bilgileri:\n" + user);
+            logger.info("Yeni kullanici olusturuldu. Kullanici bilgileri: " + user);
             return new ResponseEntity<User>(dbuser, HttpStatus.CREATED);
         } else {
             logger.error("Yeni kullanici olusturalamadi");
