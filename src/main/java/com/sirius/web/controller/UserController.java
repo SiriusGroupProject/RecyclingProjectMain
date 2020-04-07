@@ -1,8 +1,11 @@
 package com.sirius.web.controller;
 
+import com.sirius.web.WebApplication;
 import com.sirius.web.model.User;
 import com.sirius.web.service.UserService;
 import com.sirius.web.utils.HashingForPassword;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +19,7 @@ import java.util.List;
 @RequestMapping("/rest/users")
 public class UserController implements Serializable {
 
+    private static Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
 
     @Autowired
@@ -28,9 +32,10 @@ public class UserController implements Serializable {
         final List<User> users = userService.getAllUsers();
 
         if (users == null) {
+            logger.error("Kayitli kulanicilar listenemedi");
             return new ResponseEntity<List<User>>(HttpStatus.NOT_FOUND);
         }
-
+        logger.info("Kayitli kulanicilar listelendi");
         return new ResponseEntity<List<User>>(users, HttpStatus.OK);
     }
 
@@ -42,8 +47,10 @@ public class UserController implements Serializable {
             user.setPassword(encpassword);
 
             final User dbuser = userService.createUser(user);
+            logger.info("Yeni kullanici olusturuldu. Kullanici bilgileri:\n" + user);
             return new ResponseEntity<User>(dbuser, HttpStatus.CREATED);
         } else {
+            logger.error("Yeni kullanici olusturalamadi");
             return new ResponseEntity<User>(HttpStatus.BAD_REQUEST);
         }
 
@@ -51,13 +58,13 @@ public class UserController implements Serializable {
 
     @GetMapping("/{email}")
     public ResponseEntity<User> getUser(@PathVariable String email) {
-        try {
-            final User dbuser = userService.findUserByEmail(email);
-            if (dbuser == null) {
-                return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
-            }
+
+        final User dbuser = userService.findUserByEmail(email);
+        if (dbuser != null) {
+            logger.info(email + " ID numarali kullanicinin bilgileri getirildi");
             return new ResponseEntity<User>(dbuser, HttpStatus.OK);
-        } catch (Exception e) {
+        } else {
+            logger.error(email + " ID numarali kullanici bulunamadi");
             return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
         }
     }
@@ -70,47 +77,54 @@ public class UserController implements Serializable {
             String hashedPassword = HashingForPassword.hash(user.getPassword());
             user.setPassword(hashedPassword);
             userService.updateUser(user);
+            logger.info(user.getEmail() + " ID numarali kullanicinin bilgileri guncellenmistir");
             return new ResponseEntity<User>(user, HttpStatus.OK);
         } else {
+            logger.error(user.getEmail() + " ID numarali kullanici bulunamadi");
             return new ResponseEntity<User>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @DeleteMapping("deleteUser")
-    public ResponseEntity deleteUser(@RequestParam String email){
-        try {
-            boolean ok = userService.deleteUser(email);
-            return new ResponseEntity(ok, HttpStatus.OK);
-        } catch (RuntimeException e){
-            return new ResponseEntity(false, HttpStatus.UNAUTHORIZED);
-        } catch (Exception e){
+    public ResponseEntity deleteUser(@RequestParam String email) {
+
+        if(userService.exists(email)) {
+            userService.deleteUser(email);
+            logger.info(email + " ID numarali kullanici silindi");
+            return new ResponseEntity(true, HttpStatus.OK);
+        } else {
+            logger.error(email + " ID numarali kullanici silinemedi");
             return new ResponseEntity(false, HttpStatus.BAD_REQUEST);
         }
     }
 
     @DeleteMapping("deleteAll")
     public ResponseEntity deleteAll() {
-        boolean ok = userService.deleteAll();
-        return new ResponseEntity(ok, HttpStatus.NO_CONTENT);
+        logger.info("Tüm kullanicilar silindi");
+        return new ResponseEntity(true, HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("login")
     public boolean loginUser(@RequestParam String email, @RequestParam String password) {
         boolean dbUserIsExist = userService.authenticate(email, password);
        if(!dbUserIsExist) {
+           logger.error(email + " ID numarali kullanicinin giris bilgileri hatali");
            return false;
        }
-       return true;
+        logger.info(email + " ID numarali kullanici uygulamaya giris yapti");
+        return true;
     }
 
     @PutMapping("updateBalance/{email}/{balance}")
     public boolean updateBalance(@PathVariable("email") String email, @PathVariable("balance")String balance){
         User dbUser = userService.findUserByEmail(email);
         if(dbUser == null) {
+            logger.error(email + " ID numarali kullanicinin hesap bakiyesi guncellenemedi");
             return false;
         }
         dbUser.setBalance(dbUser.getBalance()+ Float.parseFloat(balance));
         userService.updateUser(dbUser);
+        logger.info(email + " ID numarali kullanicinin yeni hesap bakiyesi " + balance);
         return true;
     }
 }
