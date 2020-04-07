@@ -1,6 +1,5 @@
 package com.sirius.web.controller;
 
-import com.sirius.web.WebApplication;
 import com.sirius.web.model.User;
 import com.sirius.web.service.UserService;
 import com.sirius.web.utils.HashingForPassword;
@@ -109,7 +108,7 @@ public class UserController implements Serializable {
     public boolean loginUser(@RequestParam String email, @RequestParam String password) {
         boolean dbUserIsExist = userService.authenticate(email, password);
        if(!dbUserIsExist) {
-           logger.error(email + " veya " + password + " yanlis");
+           logger.error(email + " ID numarali kullanici icin: email veya parola yanlis");
            return false;
        }
         logger.info(email + " ID numarali kullanici uygulamaya giris yapti");

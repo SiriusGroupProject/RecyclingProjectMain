@@ -106,7 +106,7 @@ public class AutomatController implements Serializable {
         boolean isDbBottle = bottleService.exists(barcode);
 
         if (!isDbAutomat || !isDbBottle) {
-            logger.error(id + " veya " + barcode + " yanlis");
+            logger.error("Otomatin ID numarasi veya sisenin barcode numarasi yanlis");
             return new ResponseEntity(false, HttpStatus.BAD_REQUEST);
         }
         else {
