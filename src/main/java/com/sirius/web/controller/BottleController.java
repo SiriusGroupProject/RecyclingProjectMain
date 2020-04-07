@@ -54,7 +54,7 @@ public class BottleController implements Serializable {
     public ResponseEntity<Bottle> getBottle(@PathVariable String barcode) {
         final Bottle dbBottle = bottleService.findBottleByBarcode(barcode);
         if (dbBottle != null) {
-            logger.info(barcode + " ID numarali sisenin bilgileri getirildi");
+            logger.info(barcode + " ID numarali sisenin bilgileri: " + dbBottle);
             return new ResponseEntity<Bottle>(dbBottle, HttpStatus.OK);
         } else {
             logger.error(barcode + " ID numarali sise bulunamadi");

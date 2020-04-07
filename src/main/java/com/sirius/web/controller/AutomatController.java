@@ -58,7 +58,7 @@ public class AutomatController implements Serializable {
     public ResponseEntity<Automat> getAutomat(@PathVariable String id) {
         final Automat dbAutomat = automatService.findAutomatById(id);
         if (dbAutomat != null) {
-            logger.info(id + " ID numarali otomatin bilgileri getirildi");
+            logger.info(id + " ID numarali otomatin bilgileri: " + dbAutomat);
             return new ResponseEntity<Automat>(dbAutomat, HttpStatus.OK);
         } else {
             logger.error(id + " ID numarali otomat bulunamadi");

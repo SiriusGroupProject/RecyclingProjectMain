@@ -60,7 +60,7 @@ public class UserController implements Serializable {
 
         final User dbuser = userService.findUserByEmail(email);
         if (dbuser != null) {
-            logger.info(email + " ID numarali kullanicinin bilgileri getirildi");
+            logger.info(email + " ID numarali kullanicinin bilgileri: " + dbuser);
             return new ResponseEntity<User>(dbuser, HttpStatus.OK);
         } else {
             logger.error(email + " ID numarali kullanici bulunamadi");
