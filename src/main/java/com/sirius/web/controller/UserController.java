@@ -100,6 +100,7 @@ public class UserController implements Serializable {
 
     @DeleteMapping("deleteAll")
     public ResponseEntity deleteAll() {
+        userService.deleteAll();
         logger.info("Tüm kullanicilar silindi");
         return new ResponseEntity(true, HttpStatus.NO_CONTENT);
     }
@@ -108,7 +109,7 @@ public class UserController implements Serializable {
     public boolean loginUser(@RequestParam String email, @RequestParam String password) {
         boolean dbUserIsExist = userService.authenticate(email, password);
        if(!dbUserIsExist) {
-           logger.error(email + " ID numarali kullanicinin giris bilgileri hatali");
+           logger.error(email + " veya " + password + " yanlis");
            return false;
        }
         logger.info(email + " ID numarali kullanici uygulamaya giris yapti");
