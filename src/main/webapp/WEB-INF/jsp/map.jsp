@@ -48,7 +48,7 @@
 </head>
 
 <body>
-<div class="wrapper" style="margin: 50px 50px 175px 300px">
+<div class="wrapper" style="margin: 25px 50px 0px 300px">
     <div class="sidebar" data-color="green" data-background-color="white" data-image="img/sidebar-1.jpg">
         <!--
           Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
@@ -259,14 +259,96 @@
             });
         </script>
     </div>
+    <p id="baslangic">Baslangic noktasi:</p>
+    <p id="hedef">Hedef noktasi:</p>
     <div id="googleMap" style="width: 100%;height:600px;"></div>
     <script>
+        var startLat;
+        var startLong;
+
+        var destinationLat;
+        var destinationLong;
+
+        var currentLat;
+        var currentLong;
+
+        var startMarker;
+        var destinationMarker;
+        var markers = [];
+        var lastMarker;
+        var map;
+        var destWindow;
+        var startWindow;
+        var infowindow;
+
+        function deleteUnnecessaryMarkers(){
+            for (var i = 0; i < markers.length; i++) {
+                if ((markers[i] != startMarker && markers[i] != destinationMarker)){
+                    markers[i].setMap(null);
+                }
+            }
+        }
+
+        function assignFinish() {
+            destinationLat = currentLat.toFixed(3);
+            destinationLong = currentLong.toFixed(3);
+            //alert(destinationLat + "," + destinationLong + " noktasi bitis noktasi olarak secildi");
+            destinationMarker = lastMarker;
+            deleteUnnecessaryMarkers();
+            infowindow.close();
+            destWindow.open(map,destinationMarker);
+            document.getElementById("hedef").innerHTML = "Hedef noktasi: " + destinationLat + ", " + destinationLong;
+        }
+
+        function assignStart() {
+            startLat = currentLat.toFixed(3);
+            startLong = currentLong.toFixed(3);
+            //alert(startLat + "," + startLong +" noktasi baslangic noktasi olarak secildi");
+            startMarker = lastMarker;
+            deleteUnnecessaryMarkers();
+            infowindow.close();
+            startWindow.open(map,startMarker);
+            document.getElementById("baslangic").innerHTML = "Baslangic noktasi: " + startLat + "," + startLong;
+        }
+
         function myMap() {
             var mapProp= {
-                center:new google.maps.LatLng(51.508742,-0.120850),
-                zoom:5,
+                center:new google.maps.LatLng(39.9334,32.8597),
+                zoom:15,
             };
-            var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
+
+            infowindow = new google.maps.InfoWindow({
+                content: "\n" +
+                    "    <button onclick=\"assignStart()\"><p>baslangic noktasi olarak sec</p></button>\n" +
+                    "    <p> </p>" +
+                    "    <button onclick=\"assignFinish()\"><p>hedef noktasi olarak sec</p></button>\n"
+            });
+
+            startWindow =  new google.maps.InfoWindow({
+                content: "<p>Baslangic</p>"
+            });
+
+            destWindow =  new google.maps.InfoWindow({
+                content: "<p>Hedef</p>"
+            });
+
+            map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
+            google.maps.event.addListener(map, 'click', function(event) {
+                deleteUnnecessaryMarkers();
+                addMarker(event.latLng);
+            });
+
+            function addMarker(location) {
+                var marker = new google.maps.Marker({
+                    position: location,
+                    map: map,
+                });
+                currentLat = location.lat();
+                currentLong = location.lng();
+                markers.push(marker);
+                lastMarker = marker;
+                infowindow.open(map,marker);
+            }
         }
     </script>
 
