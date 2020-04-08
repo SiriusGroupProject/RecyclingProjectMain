@@ -48,7 +48,7 @@
 </head>
 
 <body>
-<div class="wrapper" style="margin: 25px 50px 0px 300px">
+<div class="wrapper" style="margin: 15px 50px 0px 300px">
     <div class="sidebar" data-color="green" data-background-color="white" data-image="img/sidebar-1.jpg">
         <!--
           Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
@@ -259,6 +259,51 @@
             });
         </script>
     </div>
+
+    <script>
+        function changeSelection(){
+            if (document.getElementById("myselect").value == 2)
+                document.getElementById("numVal").placeholder = "Kapasite(litre)";
+            else if (document.getElementById("myselect").value == 3)
+                document.getElementById("numVal").placeholder = "Kilometre";
+            else
+                document.getElementById("numVal").placeholder = "Degeri giriniz";
+        }
+
+        function rotalama() {
+            if (document.getElementById("myselect").value == 1)
+                alert("Rota olusturma yontemi seciniz.");
+            else if (document.getElementById("myselect").value == 2){
+                if (document.getElementById("numVal").value <= 0){
+                    alert("Kapasite 0'a esit veya kucuk olamaz.");
+                }
+                else {
+                    calculateAndDisplayRoute(directionsService, directionsRenderer)
+                }
+            }
+            else if (document.getElementById("myselect").value == 3){
+                if (document.getElementById("numVal").value <= 0){
+                    alert("Rota uzunlugu 0'a esit veya kucuk olamaz.");
+                }
+                else {
+                    calculateAndDisplayRoute(directionsService, directionsRenderer)
+                }
+            }
+        }
+    </script>
+    <form action="javascript:rotalama();">
+        <select name="myselect" onchange="javascript:changeSelection();"style="margin-left: 60%; border-radius: 6px;
+         border-color:whitesmoke; background-color:whitesmoke;width: 15%;height: 5%;
+         font-size: smaller; color: darkgrey" id="myselect" >
+            <option value="1"> Rota olusturma yontemi</option>
+            <option value="2">Kapasiteye gore olustur</option>
+            <option value="3">Kilometreye gore olustur</option>
+        </select>
+        <input type="number" id="numVal" placeholder="Degeri giriniz" style="font-size: smaller;width: 10%;height: 5%;
+        border-radius: 6px; border-color:whitesmoke; background-color:whitesmoke;">
+        <button type="submit" style="font-size: smaller;background-color:#14bd14; color: white; border-radius: 6px;width: 13%;
+        height: 5%;margin-right: 0%">Rota Olustur</button>
+    </form>
     <p id="baslangic">Baslangic noktasi:</p>
     <p id="hedef">Hedef noktasi:</p>
     <div id="googleMap" style="width: 100%;height:600px;"></div>
@@ -281,6 +326,11 @@
         var startWindow;
         var infowindow;
 
+        var directionsService;
+        var directionsRenderer;
+
+        var waypts;
+
         function deleteUnnecessaryMarkers(){
             for (var i = 0; i < markers.length; i++) {
                 if ((markers[i] != startMarker && markers[i] != destinationMarker)){
@@ -292,7 +342,6 @@
         function assignFinish() {
             destinationLat = currentLat.toFixed(3);
             destinationLong = currentLong.toFixed(3);
-            //alert(destinationLat + "," + destinationLong + " noktasi bitis noktasi olarak secildi");
             destinationMarker = lastMarker;
             deleteUnnecessaryMarkers();
             infowindow.close();
@@ -300,10 +349,35 @@
             document.getElementById("hedef").innerHTML = "Hedef noktasi: " + destinationLat + ", " + destinationLong;
         }
 
+        function calculateAndDisplayRoute(directionsService, directionsRenderer) {
+            waypts = [];
+            // get list automats
+            for (var i = 0; i < 1; i++) {
+                waypts.push({
+                    location: new google.maps.LatLng(39.98, 32.75),
+                    stopover: true
+                });
+            }
+            directionsService.route(
+                {
+                    origin: new google.maps.LatLng(startLat, startLong),
+                    destination: new google.maps.LatLng(destinationLat, destinationLong),
+                    waypoints: waypts,
+                    optimizeWaypoints: true,
+                    travelMode: 'DRIVING'
+                },
+                function(response, status) {
+                    if (status === 'OK') {
+                        directionsRenderer.setDirections(response);
+                    } else {
+                        window.alert('Directions request failed due to ' + status);
+                    }
+                });
+        }
+
         function assignStart() {
             startLat = currentLat.toFixed(3);
             startLong = currentLong.toFixed(3);
-            //alert(startLat + "," + startLong +" noktasi baslangic noktasi olarak secildi");
             startMarker = lastMarker;
             deleteUnnecessaryMarkers();
             infowindow.close();
@@ -312,6 +386,8 @@
         }
 
         function myMap() {
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer();
             var mapProp= {
                 center:new google.maps.LatLng(39.9334,32.8597),
                 zoom:15,
@@ -337,6 +413,8 @@
                 deleteUnnecessaryMarkers();
                 addMarker(event.latLng);
             });
+
+            directionsRenderer.setMap(map);
 
             function addMarker(location) {
                 var marker = new google.maps.Marker({
