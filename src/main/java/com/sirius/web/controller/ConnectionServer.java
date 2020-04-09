@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import com.sirius.web.utils.Util;
 
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class ConnectionServer {
 
         boolean isDB = isExistsDb(userId, automatId);
         if (!isDB) {
-            logger.error("#" + userId + " $" + automatId + " &" + trace(Thread.currentThread().getStackTrace()) + " @Not found in database");
+            logger.error("#" + userId + " $" + automatId + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Not found in database");
             return false;
         }
 
@@ -44,10 +45,10 @@ public class ConnectionServer {
             baseConn = new BaseConnection(userId,false, "", 2, 2, false);
             dbAutomat.setBaseConnection(baseConn);
             automatService.updateAutomat(dbAutomat);
-            logger.info("#" + userId + " $" + automatId + " &" + trace(Thread.currentThread().getStackTrace()) + " @Connection request successful");
+            logger.info("#" + userId + " $" + automatId + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Connection request successful");
             return true;
         }
-        logger.error("#" + userId + " $" + automatId + " &" + trace(Thread.currentThread().getStackTrace()) + " @Connection request failed");
+        logger.error("#" + userId + " $" + automatId + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Connection request failed");
         return false;
     }
 
@@ -57,7 +58,7 @@ public class ConnectionServer {
 
         boolean isDB = isExistsDb(automatId);
         if (!isDB) {
-            logger.error("$" + automatId + " &" + trace(Thread.currentThread().getStackTrace()) + " @Not found in database");
+            logger.error("$" + automatId + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Not found in database");
             return "";
         }
 
@@ -68,10 +69,10 @@ public class ConnectionServer {
             baseConn.setAutomatIsAcceptUser(true);
             dbAutomat.setBaseConnection(baseConn);
             automatService.updateAutomat(dbAutomat);
-            logger.info("#" + baseConn.getConnectedUserId() + " $" + automatId + " &" + trace(Thread.currentThread().getStackTrace()) + " @User was accepted by automat");
+            logger.info("#" + baseConn.getConnectedUserId() + " $" + automatId + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***User was accepted by automat");
             return baseConn.getConnectedUserId();
         }
-        logger.error("#" + baseConn.getConnectedUserId() + " $" + automatId + " &" + trace(Thread.currentThread().getStackTrace()) + " @User was not accepted by automat");
+        logger.error("#" + baseConn.getConnectedUserId() + " $" + automatId + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***User was not accepted by automat");
         return "";
     }
 
@@ -80,7 +81,7 @@ public class ConnectionServer {
 
         boolean isDB = isExistsDb(userId, automatId);
         if (!isDB) {
-            logger.error("#" + userId + " $" + automatId + " &" + trace(Thread.currentThread().getStackTrace()) + " @Not found in database");
+            logger.error("#" + userId + " $" + automatId + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Not found in database");
             return false;
         }
 
@@ -88,10 +89,10 @@ public class ConnectionServer {
         BaseConnection baseConn = dbAutomat.getBaseConnection();
 
         if(baseConn != null && dbAutomat.isActive() && baseConn.getConnectedUserId().equals(userId) && baseConn.isAutomatIsAcceptUser()) {
-            logger.info("#" + userId + " $" + automatId + " &" + trace(Thread.currentThread().getStackTrace()) + " @Android has confirmed that the connection is successful");
+            logger.info("#" + userId + " $" + automatId + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Android has confirmed that the connection is successful");
             return true;
         }
-        logger.error("#" + userId + " $" + automatId + " &" + trace(Thread.currentThread().getStackTrace()) + " @Android has not confirmed that the connection was successful");
+        logger.error("#" + userId + " $" + automatId + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Android has not confirmed that the connection was successful");
         return false;
     }
 
@@ -100,7 +101,7 @@ public class ConnectionServer {
 
         boolean isDB = isExistsDb(connectedUserId, automatId, barcode);
         if (!isDB) {
-            logger.error("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + trace(Thread.currentThread().getStackTrace()) + " @Not found in database");
+            logger.error("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Not found in database");
             return false;
         }
 
@@ -111,10 +112,10 @@ public class ConnectionServer {
             baseConn.setScannedBarcode(barcode);
             dbAutomat.setBaseConnection(baseConn);
             automatService.updateAutomat(dbAutomat);
-            logger.info("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + trace(Thread.currentThread().getStackTrace()) + " @Android forwarded the barcode");
+            logger.info("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Android forwarded the barcode");
             return true;
         }
-        logger.error("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + trace(Thread.currentThread().getStackTrace()) + " @Android could not forward the barcode");
+        logger.error("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Android could not forward the barcode");
         return false;
     }
 
@@ -124,7 +125,7 @@ public class ConnectionServer {
 
         boolean isDB = isExistsDb(connectedUserId, automatId);
         if (!isDB) {
-            logger.error("#" + connectedUserId + " $" + automatId + " &" + trace(Thread.currentThread().getStackTrace()) + " @Not found in database");
+            logger.error("#" + connectedUserId + " $" + automatId + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Not found in database");
             return "";
         }
 
@@ -132,10 +133,10 @@ public class ConnectionServer {
         BaseConnection baseConn = dbAutomat.getBaseConnection();
 
         if(baseConn != null && dbAutomat.isActive() && baseConn.getConnectedUserId().equals(connectedUserId) && baseConn.isAutomatIsAcceptUser() && !baseConn.getScannedBarcode().equals("")) {
-            logger.info("#" + connectedUserId + " $" + automatId + " %" + baseConn.getScannedBarcode() + " &" + trace(Thread.currentThread().getStackTrace()) + " @Automat received the barcode.");
+            logger.info("#" + connectedUserId + " $" + automatId + " %" + baseConn.getScannedBarcode() + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Automat received the barcode.");
             return baseConn.getScannedBarcode();
         }
-        logger.error("#" + connectedUserId + " $" + automatId + " &" + trace(Thread.currentThread().getStackTrace()) + " @Automat has not yet received the barcode");
+        logger.error("#" + connectedUserId + " $" + automatId + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Automat has not yet received the barcode");
         return "";
     }
 
@@ -144,7 +145,7 @@ public class ConnectionServer {
     public boolean bottleVerification(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode, @PathVariable int verified) {
         boolean isDB = isExistsDb(connectedUserId, automatId, barcode);
         if (!isDB) {
-            logger.error("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" +trace(Thread.currentThread().getStackTrace()) + " @Not found in database");
+            logger.error("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Not found in database");
             return false;
         }
 
@@ -156,13 +157,13 @@ public class ConnectionServer {
             dbAutomat.setBaseConnection(baseConn);
             automatService.updateAutomat(dbAutomat);
             if(verified == 0) {
-                logger.info("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + trace(Thread.currentThread().getStackTrace()) + " @The bottle has not been verified");
+                logger.info("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***The bottle has not been verified");
             }else if(verified == 1){
-                logger.info("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + trace(Thread.currentThread().getStackTrace()) + " @The bottle has been verified");
+                logger.info("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***The bottle has been verified");
             }
             return true;
         }
-        logger.error("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + trace(Thread.currentThread().getStackTrace()) + " @The bottle verification result was not confirmed");
+        logger.error("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***The bottle verification result was not confirmed");
         return false;
     }
 
@@ -170,7 +171,7 @@ public class ConnectionServer {
     public int getBottleVerification(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode) {
         boolean isDB = isExistsDb(connectedUserId, automatId, barcode);
         if (!isDB) {
-            logger.error("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + trace(Thread.currentThread().getStackTrace()) + " @Not found in database");
+            logger.error("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Not found in database");
             return 2;
         }
 
@@ -179,13 +180,13 @@ public class ConnectionServer {
 
         if(baseConn != null && dbAutomat.isActive() && baseConn.getConnectedUserId().equals(connectedUserId) && baseConn.isAutomatIsAcceptUser() && !baseConn.getScannedBarcode().equals("") && baseConn.getVerified() != 2) {
             if(baseConn.getVerified() == 0) {
-                logger.info("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + trace(Thread.currentThread().getStackTrace()) + " @Android received the bottle verification result as \"failed\"");
+                logger.info("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Android received the bottle verification result as \"failed\"");
             }else if(baseConn.getVerified() == 1) {
-                logger.info("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + trace(Thread.currentThread().getStackTrace()) + " @Android received the bottle verification result as \"successful\"");
+                logger.info("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Android received the bottle verification result as \"successful\"");
             }
             return baseConn.getVerified();
         }
-        logger.error("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + trace(Thread.currentThread().getStackTrace()) + " @Android has not yet received the verification result of the bottle");
+        logger.error("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Android has not yet received the verification result of the bottle");
         return 2;
     }
 
@@ -194,7 +195,7 @@ public class ConnectionServer {
     public boolean closeOrNewTransaction(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode,@PathVariable("verified") int verified, @PathVariable int result) {
         boolean isDB = isExistsDb(connectedUserId, automatId, barcode);
         if (!isDB) {
-            logger.error("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + trace(Thread.currentThread().getStackTrace()) + " @Not found in database");
+            logger.error("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Not found in database");
             return false;
         }
 
@@ -206,15 +207,15 @@ public class ConnectionServer {
             dbAutomat.setBaseConnection(baseConn);
             automatService.updateAutomat(dbAutomat);
             if(result == 0) {
-                logger.info("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + trace(Thread.currentThread().getStackTrace()) + " @The next step : \"close connection\"");
+                logger.info("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***The next step : \"close connection\"");
             }else if(result == 1) {
-                logger.info("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + trace(Thread.currentThread().getStackTrace()) + " @The next step : \"new transaction\"");
+                logger.info("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***The next step : \"new transaction\"");
             }else if(result == 3) {
-                logger.info("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + trace(Thread.currentThread().getStackTrace()) + " @The next step : \"continue processing with the same bottle\"");
+                logger.info("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***The next step : \"continue processing with the same bottle\"");
             }
             return true;
         }
-        logger.error("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + trace(Thread.currentThread().getStackTrace()) + " @The next step was not confirmed");
+        logger.error("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***The next step was not confirmed");
         return false;
 
     }
@@ -223,7 +224,7 @@ public class ConnectionServer {
     public int getResult(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode, @PathVariable("verified") int verified) {
         boolean isDB = isExistsDb(connectedUserId, automatId, barcode);
         if (!isDB) {
-            logger.error("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + trace(Thread.currentThread().getStackTrace()) + " @Not found in database");
+            logger.error("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Not found in database");
             return 2;
         }
 
@@ -236,15 +237,15 @@ public class ConnectionServer {
             automatService.updateAutomat(dbAutomat);
             int result = baseConn.getResult();
             if(result == 0) {
-                logger.info("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + trace(Thread.currentThread().getStackTrace()) + " @Android has received the result : \"close connection\"");
+                logger.info("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Android has accepted the result : \"close connection\"");
             }else if(result == 1) {
-                logger.info("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + trace(Thread.currentThread().getStackTrace()) + " @Android has received the result : \"new transaction\"");
+                logger.info("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Android has accepted the result : \"new transaction\"");
             }else if(result == 3) {
-                logger.info("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + trace(Thread.currentThread().getStackTrace()) + " @Android has received the result : \"continue processing with the same bottle\"");
+                logger.info("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Android has accepted the result : \"continue processing with the same bottle\"");
             }
             return result;
         }
-        logger.error("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + trace(Thread.currentThread().getStackTrace()) + " @Android has not received the result");
+        logger.error("#" + connectedUserId + " $" + automatId + " %" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Android has not yet accepted the result");
         return 2;
     }
 
@@ -253,7 +254,7 @@ public class ConnectionServer {
     public boolean waitingForResult(@PathVariable String automatId) {
         boolean isDB = isExistsDb(automatId);
         if (!isDB) {
-            logger.error("$" + automatId + " &" + trace(Thread.currentThread().getStackTrace()) + " @Not found in database");
+            logger.error("$" + automatId + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " @Not found in database");
             return false;
         }
 
@@ -265,17 +266,18 @@ public class ConnectionServer {
 
             switch (baseConn.getResult()) {
                 case 0 :
-                    logger.info("#" + baseConn.getConnectedUserId() + " $" + automatId + " &" + trace(Thread.currentThread().getStackTrace()) + " @Connection closed");
+                    logger.info("#" + baseConn.getConnectedUserId() + " $" + automatId + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Connection closed");
                     newBS = null;
                     break;
 
                 case 1 :
-                    logger.info("#" + baseConn.getConnectedUserId() + " $" + automatId + " &" + trace(Thread.currentThread().getStackTrace()) + " @New transaction started");
+                    logger.info("#" + baseConn.getConnectedUserId() + " $" + automatId + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***New transaction started");
                     newBS = new BaseConnection(baseConn.getConnectedUserId(), baseConn.isAutomatIsAcceptUser(),
                             "", 2, 2, false);
                     break;
 
                 case 3 :
+                    logger.info("#" + baseConn.getConnectedUserId() + " $" + automatId + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Processing with the same bottle continued");
                     newBS = new BaseConnection(baseConn.getConnectedUserId(), baseConn.isAutomatIsAcceptUser(),
                             baseConn.getScannedBarcode(), 2, 2, false);
                     break;
@@ -287,7 +289,7 @@ public class ConnectionServer {
             automatService.updateAutomat(dbAutomat);
             return true;
         }
-
+        logger.error("#" + baseConn.getConnectedUserId() + " $" + automatId + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***The acceptance message for \"result\" has not yet arrived on Automat");
         return false;
     }
 
@@ -298,8 +300,10 @@ public class ConnectionServer {
         if (dbAutomat != null && dbAutomat.getBaseConnection() != null) {
             dbAutomat.setBaseConnection(null);
             automatService.updateAutomat(dbAutomat);
+            logger.info("#" + dbAutomat.getBaseConnection().getConnectedUserId() + " $" + automatId + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***An error occurred.Connection was closed directly");
             return true;
         }
+        logger.error("#" + dbAutomat.getBaseConnection().getConnectedUserId() + " $" + automatId + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***The connection could not be closed");
         return false;
     }
 
@@ -311,6 +315,7 @@ public class ConnectionServer {
             automat.setBaseConnection(null);
             automatService.updateAutomat(automat);
         }
+        logger.info("&" + Util.trace(Thread.currentThread().getStackTrace()) + " ***All connections were closed directly.");
         return true;
     }
 
@@ -328,17 +333,6 @@ public class ConnectionServer {
             default :
                 return false;
         }
-    }
-
-    public static String trace(StackTraceElement e[]) {
-        boolean doNext = false;
-        for (StackTraceElement s : e) {
-            if (doNext) {
-                return s.getMethodName();
-            }
-            doNext = s.getMethodName().equals("getStackTrace");
-        }
-        return "";
     }
 }
 
