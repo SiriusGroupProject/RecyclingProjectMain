@@ -3,6 +3,7 @@ package com.sirius.web.controller;
 import com.sirius.web.model.User;
 import com.sirius.web.service.UserService;
 import com.sirius.web.utils.HashingForPassword;
+import com.sirius.web.utils.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +28,14 @@ public class UserController implements Serializable {
     }
 
     @GetMapping("listUsers")
-    public ResponseEntity<List<User>> findAll() {
+    public ResponseEntity<List<User>> findAllUsers() {
         final List<User> users = userService.getAllUsers();
 
         if (users == null) {
-            logger.error("Kayitli kulanicilar listenemedi");
+            logger.error("&" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Registered users could not be listed");
             return new ResponseEntity<List<User>>(HttpStatus.NOT_FOUND);
         }
-        logger.info("Kayitli kulanicilar listesi: " + users);
+        logger.info("&" + Util.trace(Thread.currentThread().getStackTrace()) + " ***List of registered users : " + users);
         return new ResponseEntity<List<User>>(users, HttpStatus.OK);
     }
 
@@ -46,10 +47,10 @@ public class UserController implements Serializable {
             user.setPassword(encpassword);
 
             final User dbuser = userService.createUser(user);
-            logger.info("Yeni kullanici olusturuldu. Kullanici bilgileri: " + user);
+            logger.info("#" + dbuser.getEmail() + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***New user has been created. Information of the new user : " + dbuser);
             return new ResponseEntity<User>(dbuser, HttpStatus.CREATED);
         } else {
-            logger.error("Yeni kullanici olusturalamadi");
+            logger.error("#" + user.getEmail() + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Failed to create new user");
             return new ResponseEntity<User>(HttpStatus.BAD_REQUEST);
         }
 
@@ -60,10 +61,10 @@ public class UserController implements Serializable {
 
         final User dbuser = userService.findUserByEmail(email);
         if (dbuser != null) {
-            logger.info(email + " ID numarali kullanicinin bilgileri: " + dbuser);
+            logger.info("#" + email + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***User information : " + dbuser);
             return new ResponseEntity<User>(dbuser, HttpStatus.OK);
         } else {
-            logger.error(email + " ID numarali kullanici bulunamadi");
+            logger.error("#" + email + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***User information not found");
             return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
         }
     }
@@ -76,10 +77,10 @@ public class UserController implements Serializable {
             String hashedPassword = HashingForPassword.hash(user.getPassword());
             user.setPassword(hashedPassword);
             userService.updateUser(user);
-            logger.info(user.getEmail() + " ID numarali kullanicinin bilgileri guncellenmistir");
+            logger.info("#" + user.getEmail() + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***User information has been updated");
             return new ResponseEntity<User>(user, HttpStatus.OK);
         } else {
-            logger.error(user.getEmail() + " ID numarali kullanici bulunamadi");
+            logger.error("#" + user.getEmail() + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Not found in database");
             return new ResponseEntity<User>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -89,10 +90,10 @@ public class UserController implements Serializable {
 
         if(userService.exists(email)) {
             userService.deleteUser(email);
-            logger.info(email + " ID numarali kullanici silindi");
+            logger.info("#" + email + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***The user has been deleted");
             return new ResponseEntity(true, HttpStatus.OK);
         } else {
-            logger.error(email + " ID numarali kullanici silinemedi");
+            logger.error("#" + email + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Not found in database");
             return new ResponseEntity(false, HttpStatus.BAD_REQUEST);
         }
     }
@@ -100,7 +101,7 @@ public class UserController implements Serializable {
     @DeleteMapping("deleteAll")
     public ResponseEntity deleteAll() {
         userService.deleteAll();
-        logger.info("Tüm kullanicilar silindi");
+        logger.info("&" + Util.trace(Thread.currentThread().getStackTrace()) + " ***All users have been deleted");
         return new ResponseEntity(true, HttpStatus.NO_CONTENT);
     }
 
@@ -108,10 +109,10 @@ public class UserController implements Serializable {
     public boolean loginUser(@RequestParam String email, @RequestParam String password) {
         boolean dbUserIsExist = userService.authenticate(email, password);
        if(!dbUserIsExist) {
-           logger.error(email + " ID numarali kullanici icin: email veya parola yanlis");
+           logger.error("#" + email + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Login information incorrect");
            return false;
        }
-        logger.info(email + " ID numarali kullanici uygulamaya giris yapti");
+        logger.info("#" + email + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Login successful");
         return true;
     }
 
@@ -119,12 +120,12 @@ public class UserController implements Serializable {
     public boolean updateBalance(@PathVariable("email") String email, @PathVariable("balance")String balance){
         User dbUser = userService.findUserByEmail(email);
         if(dbUser == null) {
-            logger.error(email + " ID numarali kullanicinin hesap bakiyesi guncellenemedi");
+            logger.error("#" + email + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Not found in database");
             return false;
         }
         dbUser.setBalance(dbUser.getBalance()+ Float.parseFloat(balance));
         userService.updateUser(dbUser);
-        logger.info(email + " ID numarali kullanicinin yeni hesap bakiyesi " + balance);
+        logger.info("#" + email + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***User balance updated. New balance : " + dbUser.getBalance());
         return true;
     }
 }

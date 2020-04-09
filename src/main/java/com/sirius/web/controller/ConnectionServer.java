@@ -254,7 +254,7 @@ public class ConnectionServer {
     public boolean waitingForResult(@PathVariable String automatId) {
         boolean isDB = isExistsDb(automatId);
         if (!isDB) {
-            logger.error("$" + automatId + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " @Not found in database");
+            logger.error("$" + automatId + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Not found in database");
             return false;
         }
 
