@@ -1,8 +1,6 @@
-<%@ page import="java.util.List" %>
-<%@ page import="com.sirius.web.model.Automat" %>
-<%@ page import="com.sirius.web.model.Location" %>
-<%@ page import="com.sirius.web.service.AutomatService" %>
-<%@ page import="com.sirius.web.utils.AutomatClient" %>
+<%@ page import="com.sirius.web.utils.LogFile" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="lombok.extern.java.Log" %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -24,141 +22,149 @@
     <link href="css/material-dashboard.css?v=2.1.1" rel="stylesheet"/>
     <!-- CSS Just for demo purpose, don't include it in your project -->
     <link href="demo/demo.css" rel="stylesheet"/>
+
+    <!--===============================================================================================-->
+    <link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="css/util.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <!--===============================================================================================-->
+    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css'
+          integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
+
 </head>
 
 <body class="">
-    <div class="wrapper ">
-        <div class="sidebar" data-color="green" data-background-color="white" data-image="img/sidebar-1.jpg">
-            <!--
-              Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
-              Tip 2: you can also add an image using data-image tag
-          -->
-            <div class="logo">
-                <a href="/dashboard" class="simple-text logo-normal">
-                    Recycling Project
-                </a>
-            </div>
-            <div class="sidebar-wrapper">
-                <ul class="nav">
-                    <li class="nav-item active  ">
-                        <a class="nav-link" href="/dashboard">
-                            <i class="material-icons">dashboard</i>
-                            <p>Kontrol Paneli</p>
-                        </a>
-                    </li>
-                    <li class="nav-item  ">
-                        <a class="nav-link" href="/insertbottle">
-                            <i class="material-icons">add</i>
-                            <p>Sise Ekleme</p>
-                        </a>
-                    </li>
-                    <li class="nav-item  ">
-                        <a class="nav-link" href="/map">
-                            <i class="material-icons">map</i>
-                            <p>Rota Olustur</p>
-                        </a>
-                    </li>
-                    <li class="nav-item  ">
-                        <a class="nav-link" href="/report">
-                            <i class="material-icons">report</i>
-                            <p>Raporlar</p>
-                        </a>
-                    </li>
-                </ul>
-            </div>
+<div class="wrapper ">
+    <div class="sidebar" data-color="green" data-background-color="white" data-image="img/sidebar-1.jpg">
+        <!--
+          Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
+          Tip 2: you can also add an image using data-image tag
+      -->
+        <div class="logo">
+            <a href="/dashboard" class="simple-text logo-normal">
+                Recycling Project
+            </a>
         </div>
-        <div class="main-panel" data-color="green">
-            <!-- Navbar -->
-            <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top " >
-                <div class="container-fluid">
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="navbar-toggler-icon icon-bar"></span>
-                        <span class="navbar-toggler-icon icon-bar"></span>
-                        <span class="navbar-toggler-icon icon-bar"></span>
-                    </button>
+        <div class="sidebar-wrapper">
+            <ul class="nav">
+                <li class="nav-item  ">
+                    <a class="nav-link" href="/dashboard">
+                        <i class="material-icons">dashboard</i>
+                        <p>Kontrol Paneli</p>
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/insertbottle">
+                        <i class="material-icons">add</i>
+                        <p>Sise Ekleme</p>
+                    </a>
+                </li>
+                <li class="nav-item  ">
+                    <a class="nav-link" href="/map">
+                        <i class="material-icons">map</i>
+                        <p>Rota Olustur</p>
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/report">
+                        <i class="material-icons">report</i>
+                        <p>Raporlar</p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
 
-                    <div class="collapse navbar-collapse justify-content-end">
-                        <form class="navbar-form">
-                            <div class="input-group no-border">
-                                <form class="login100-form">
-                                    <input type="text" name="searchValue" class="form-control" placeholder="Search...">
-                                    <button type="submit" class="btn btn-white btn-round btn-just-icon">
-                                        <i class="material-icons">search</i>
-                                        <div class="ripple-container"></div>
-                                    </button>
-                                </form>
+    <div class="main-panel">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="navbar-toggler-icon icon-bar"></span>
+                    <span class="navbar-toggler-icon icon-bar"></span>
+                    <span class="navbar-toggler-icon icon-bar"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-end">
+                    <ul class="navbar-nav">
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" href="#pablo" id="navbarDropdownProfile" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                                <i class="material-icons">person</i>
+                                <p class="d-lg-none d-md-block">
+                                    Account
+                                </p>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
+                                <a class="dropdown-item" href="/">Log out</a>
                             </div>
-                        </form>
-                        <ul class="navbar-nav" >
-                            <li class="nav-item dropdown" >
-                                <a class="nav-link" href="#pablo" id="navbarDropdownProfile"  data-toggle="dropdown"
-                                   aria-haspopup="true" aria-expanded="false">
-                                    <i class="material-icons">person</i>
-                                    <p class="d-lg-none d-md-block">
-                                        Account
-                                    </p>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
-                                    <a class="dropdown-item"  href="/">Log out</a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
+                        </li>
+                    </ul>
                 </div>
-            </nav>
-            <!-- End Navbar -->
+            </div>
+        </nav>
+        <div class="content">
+            <div class="container-fluid">
+                <div class="card" style="width: 100%;">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead style="font-weight:bold">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Tarih</th>
+                                        <th>Saat</th>
+                                        <th>Mesaj</th>
+                                        <th>Tip</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
 
-            <div class="content">
-                <div class="container-fluid">
-                    <div class="row">
+                                        <%
+                                            ArrayList<ArrayList<String>> list = LogFile.list();
+                                            int numberList = 1;
+                                            for (int i = 0; i < list.size(); i++) {
+                                                out.println("<tr>");
+                                                out.println("<td>"+numberList+"</td>");
+                                                out.println("<td>"+list.get(i).get(0)+"</td>");
+                                                out.println("<td>"+list.get(i).get(1)+"</td>");
+                                                out.println("<td>"+list.get(i).get(3)+"</td>");
+                                                if (list.get(i).get(2).equals("INFO")) {
+                                                    out.println("<td> <button type=\"button\" rel=\"tooltip\" class=\"btn btn-info\">\n" +
+                                                            "                                            <i class=\"material-icons\">done</i>\n" +
+                                                            "                                        </button></td>");
+                                                }
+                                                else if(list.get(i).get(2).equals("WARN")){
+                                                    out.println("<td> <button type=\"button\" rel=\"tooltip\" class=\"btn btn-warning\">\n" +
+                                                            "                                            <i class=\"material-icons\">priority_high</i>\n" +
+                                                            "                                        </button></td>");
+                                                }
+                                                else{
+                                                    out.println("<td> <button type=\"button\" rel=\"tooltip\" class=\"btn btn-danger\">\n" +
+                                                            "                                            <i class=\"material-icons\">close</i>\n" +
+                                                            "                                        </button></td>");
+                                                }
+                                                out.println("</tr>");
+                                                numberList++;
+                                            }
+                                        %>
 
-                        <%
-                            String search = request.getParameter("searchValue");
-                            List<Automat> automatList = AutomatClient.listAutomats();
-                            for (int i = 0; i < automatList.size(); i++) {
-                                    String aktif = automatList.get(i).isActive() ? "Aktif" : "Aktif Degil";
-                                    String path = automatList.get(i).isActive() ? "images/circle-green-p.png" : "images/circle-red-p.png";
-                                    String adres = "";
-                                    Location location = automatList.get(i).getLocation();
-                                    if (location != null)
-                                        adres += location.getNeighborhood() + ", " + location.getDistrict() + ", " + location.getProvince();
-                                    if (search == null || search.equals("") || adres.toLowerCase().contains(search.toLowerCase())) {
-                                        out.println("<div class=\"col-md-4\">\n" +
-                                                "                        <div class=\"card card-chart\">\n" +
-                                                "                            <div class=\"card-header\" >\n" +
-                                                /*"                                <div class=\"ct-chart\" id=\"websiteViewsChart\"></div>\n" +*/
-                                                "                               <img style=\"display: block;\n" +
-                                                "                                   margin-left: auto;\n" +
-                                                "                                       margin-right: auto; margin-top: 20%; width=\"193\" height=\"130\" img src=\"images/recycle.jpg\"" + "\">\n" +
-                                                "                            </div>\n" +
-                                                "                            <div class=\"card-body\">\n" +
-                                                "                    <a class=\"nav-link\" href=\"/automatDetails?automatId=" + automatList.get(i).getId() + "\">\n" +
-                                                "                                <h4 class=\"card-title\">\n" +
-                                                "Otomat : " + automatList.get(i).getId() +
-                                                "                                </h4>\n" +
-                                                "                    </a>\n" +
-                                                "                                <p class=\"card-category\">\n" + "Toplam otomat kapasitesi : " +
-                                                automatList.get(i).getOverallVolume() +
-                                                "                                </p>\n" +
-                                                "                                <p class=\"card-category\">\n" + "Kullanilabilir otomat kapasitesi : %" +
-                                                automatList.get(i).getCapacity() +
-                                                "                                </p>\n" +
-                                                "                                <p class=\"card-category\">\n" + "Adres : " +
-                                                adres +
-                                                "                                </p>\n" +
-                                                "                            </div>\n" +
-                                                "                            <div class=\"card-footer\">\n" +
-                                                "                                <div class=\"stats\">\n" +
-                                                "                                    <img style=\"display: block; margin-right: 10px;width=\"20\" height=\"20\" img src=\"" + path +"\"> " + aktif + "\n" +
-                                                "                                </div>\n" +
-                                                "                            </div>\n" +
-                                                "                        </div>\n" +
-                                                "                    </div>" + "");
-                                    }
-                            }
-                        %>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -341,6 +347,6 @@
             });
         </script>
     </div>
+</div>
 </body>
-
 </html>

@@ -81,6 +81,12 @@
                         <p>Rota Olustur</p>
                     </a>
                 </li>
+                <li class="nav-item  ">
+                    <a class="nav-link" href="/report">
+                        <i class="material-icons">report</i>
+                        <p>Raporlar</p>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
