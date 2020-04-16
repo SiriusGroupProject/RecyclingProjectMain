@@ -296,125 +296,260 @@
         </script>
     </div>
 
-        <script>
-            function changeSelection(){
-                if (document.getElementById("myselect").value == 2)
-                    document.getElementById("numVal").placeholder = "Kapasite(litre)";
-                else if (document.getElementById("myselect").value == 3)
-                    document.getElementById("numVal").placeholder = "Kilometre";
-                else
-                    document.getElementById("numVal").placeholder = "Degeri giriniz";
-            }
+    <script>
+        function changeSelection(){
+            if (document.getElementById("myselect").value == 2)
+                document.getElementById("numVal").placeholder = "Zaman(dakika)";
+            else if (document.getElementById("myselect").value == 3)
+                document.getElementById("numVal").placeholder = "Kilometre";
+            else
+                document.getElementById("numVal").placeholder = "Degeri giriniz";
+        }
 
-            function rotalama() {
-                if (document.getElementById("myselect").value == 1)
-                    alert("Rota olusturma yontemi seciniz.");
-                else if (document.getElementById("myselect").value == 2){
-                    if (document.getElementById("numVal").value <= 0){
-                        alert("Kapasite 0'a esit veya kucuk olamaz.");
-                    }
-                    else {
-                        calculateAndDisplayRoute(directionsService, directionsRenderer)
-                    }
+        function rotalama() {
+            if (document.getElementById("myselect").value == 1)
+                alert("Rota olusturma yontemi seciniz.");
+            else if (document.getElementById("myselect").value == 2){
+                if (document.getElementById("numVal").value <= 0){
+                    alert("Kapasite 0'a esit veya kucuk olamaz.");
                 }
-                else if (document.getElementById("myselect").value == 3){
-                    if (document.getElementById("numVal").value <= 0){
-                        alert("Rota uzunlugu 0'a esit veya kucuk olamaz.");
-                    }
-                    else {
-                        calculateAndDisplayRoute(directionsService, directionsRenderer)
-                    }
+                else {
+                    calculateAndDisplayRoute(directionsService, directionsRenderer)
                 }
             }
-        </script>
-        <div class="row">
-            <div class="col-md-6">
-                <p id="baslangic" style="font-weight:bold">Baslangic noktasi:</p>
-                <p id="hedef" style="font-weight:bold">Hedef noktasi:</p>
-            </div>
+            else if (document.getElementById("myselect").value == 3){
+                if (document.getElementById("numVal").value <= 0){
+                    alert("Rota uzunlugu 0'a esit veya kucuk olamaz.");
+                }
+                else {
+                    calculateAndDisplayRoute(directionsService, directionsRenderer)
+                }
+            }
+        }
+    </script>
+    <div class="row">
+        <div class="col-md-6">
+            <p id="baslangic" style="font-weight:bold">Baslangic noktasi:</p>
+            <p id="hedef" style="font-weight:bold">Hedef noktasi:</p>
         </div>
+    </div>
     </br>
-        <form action="javascript:rotalama();">
-            <div class="row">
-                <div class="col-md-2">
-                    <select name="myselect" onchange="javascript:changeSelection();"style="border-radius: 6px;
+    <form action="javascript:rotalama();">
+        <div class="row">
+            <div class="col-md-2">
+                <select name="myselect" onchange="javascript:changeSelection();"style="border-radius: 6px;
                              height: 40px;overflow: hidden;width: 170px;
                              border-color:whitesmoke; background-color:whitesmoke;
                              font-size: smaller; color: darkgrey" id="myselect" >
-                        <option value="1"> Rota olusturma yontemi</option>
-                        <option value="2">Kapasiteye gore olustur</option>
-                        <option value="3">Kilometreye gore olustur</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <input type="number" id="numVal" placeholder="Degeri giriniz" style="font-size: smaller;
+                    <option value="1"> Rota olusturma yontemi</option>
+                    <option value="2">Zaman limiti</option>
+                    <option value="3">Kilometre limiti</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <input type="number" id="numVal" placeholder="Degeri giriniz" style="font-size: smaller;
                             height: 40px;overflow: hidden;width: 170px;
                             border-radius: 6px; border-color:whitesmoke; background-color:whitesmoke;">
-                </div>
-                <div class="col-md-3">
+            </div>
+            <div class="col-md-3">
                 <button type="submit" style="font-size: smaller;background-color:#4CAF50; color: white; border-radius: 6px;
                         margin-right: 0%;height: 40px;overflow: hidden;width: 170px;">Rota Olustur</button>
-                </div>
             </div>
-        </form>
+        </div>
+    </form>
 
-        <div id="googleMap" style="width: 100%;height:600px;"></div>
-        <script>
-            var startLat;
-            var startLong;
+    <div id="googleMap" style="width: 100%;height:600px;"></div>
+    <script>
+        var startLat;
+        var startLong;
 
-            var destinationLat;
-            var destinationLong;
+        var destinationLat;
+        var destinationLong;
 
-            var currentLat;
-            var currentLong;
+        var currentLat;
+        var currentLong;
 
-            var startMarker;
-            var destinationMarker;
-            var markers = [];
-            var lastMarker;
-            var map;
-            var destWindow;
-            var startWindow;
-            var infowindow;
+        var startMarker;
+        var destinationMarker;
+        var markers = [];
+        var lastMarker;
+        var map;
+        var destWindow;
+        var startWindow;
+        var infowindow;
 
-            var directionsService;
-            var directionsRenderer;
+        var directionsService;
+        var directionsRenderer;
 
-            var waypts;
+        var waypts;
 
-            var automatsList = [];
-            var automats = [];
-            var automatId;
-            var latitude;
-            var longitude;
-            var automatsLatitude = [];
-            var automatsLongitude = [];
+        var automatsList = [];
+        var automats = [];
+        var automatCapacity = [];
+        var automatId;
+        var latitude;
+        var longitude;
+        var automatsLatitude = [];
+        var automatsLongitude = [];
 
-            function deleteUnnecessaryMarkers(){
-                for (var i = 0; i < markers.length; i++) {
-                    if ((markers[i] != startMarker && markers[i] != destinationMarker)){
-                        markers[i].setMap(null);
-                    }
+        var fullAutomats = [];
+        var fullAutomatsLatitude = [];
+        var fullAutomatsLongitude = [];
+
+        var automatOrigins = [];
+        var automatDistances= [];
+        var automatTimeArrivals = [];
+
+        var startToAutomatDistances= [];
+        var startToAutomatTimeArrivals= [];
+
+        var destinationToAutomatDistances= [];
+        var destinationToAutomatTimeArrivals= [];
+
+        var limitm;
+        var limitt;
+
+        function deleteUnnecessaryMarkers(){
+            for (var i = 0; i < markers.length; i++) {
+                if ((markers[i] != startMarker && markers[i] != destinationMarker)){
+                    markers[i].setMap(null);
                 }
             }
+        }
 
-            function assignFinish() {
-                destinationLat = currentLat.toFixed(3);
-                destinationLong = currentLong.toFixed(3);
-                destinationMarker = lastMarker;
-                deleteUnnecessaryMarkers();
-                infowindow.close();
-                destWindow.open(map,destinationMarker);
-                document.getElementById("hedef").innerHTML = "Hedef noktasi: " + destinationLat + ", " + destinationLong;
+        function assignFinish() {
+            destinationLat = currentLat;
+            destinationLong = currentLong;
+            destinationMarker = lastMarker;
+            deleteUnnecessaryMarkers();
+            infowindow.close();
+            destWindow.open(map, destinationMarker);
+            var destinationPoint = [];
+            destinationPoint.push(destinationLat+ ", " + destinationLong);
+            const matrixOptions = {
+                origins: destinationPoint,
+                destinations: destinationPoint,
+                travelMode: 'DRIVING'
+            };
+            const service = new google.maps.DistanceMatrixService();
+            service.getDistanceMatrix(matrixOptions, callback);
+            var origins;
+            function callback(response, status) {
+                if (status !== "OK") {
+                    alert("Error with distance matrix");
+                    return;
+                }
+                origins = response.originAddresses;
+                document.getElementById("hedef").innerHTML = "Hedef noktasi: " + origins[0];
             }
+        }
 
-            function calculateAndDisplayRoute(directionsService, directionsRenderer) {
+        function doesContain(indexList, index){
+            var contain= false;
+            for (var i = 0; i< indexList.length; i++){
+                if (indexList[i] == index)
+                    return true;
+            }
+            return contain;
+        }
+        var check1 = false;
+        var check2 = false;
+
+        var pathIndexList= [];
+        var pathDistance = [];
+
+        function CalculateRouteAccordingToKilometers(lastIndex, indexList, totalDistance){
+            if (totalDistance + destinationToAutomatDistances[lastIndex] > limitm)
+                return;
+            pathIndexList.push(indexList);
+            pathDistance.push(totalDistance + destinationToAutomatDistances[lastIndex]);
+            if (indexList.length == fullAutomats.length){
+                return;
+            }
+            for (var i = 0; i< fullAutomats.length; i++){
+                if (!doesContain(indexList, i)){
+                    var indexListTemp = [];
+                    for (var j = 0; j < indexList.length; j++)
+                        indexListTemp.push(indexList[j]);
+                    indexListTemp.push(i);
+                    CalculateRouteAccordingToKilometers(i,indexListTemp, totalDistance + automatDistances[lastIndex][i]);
+                }
+            }
+            return;
+        }
+
+        function CalculateRouteAccordingToMinutes(lastIndex, indexList, totalTime){
+            if (totalTime + destinationToAutomatTimeArrivals[lastIndex] > limitt)
+                return;
+            pathIndexList.push(indexList);
+            pathDistance.push(totalTime + destinationToAutomatTimeArrivals[lastIndex]);
+            if (indexList.length == fullAutomats.length){
+                return;
+            }
+            for (var i = 0; i< fullAutomats.length; i++){
+                if (!doesContain(indexList, i)){
+                    var indexListTemp = [];
+                    for (var j = 0; j < indexList.length; j++)
+                        indexListTemp.push(indexList[j]);
+                    indexListTemp.push(i);
+                    CalculateRouteAccordingToMinutes(i,indexListTemp, totalTime + automatTimeArrivals[lastIndex][i]);
+                }
+            }
+            return;
+        }
+
+
+        function StartRecursion() {
+            pathIndexList= [];
+            pathDistance = [];
+
+            if (document.getElementById("myselect").value == 3) {
+                for (var i = 0; i < fullAutomats.length; i++) {
+                    var indexListTemp = [];
+                    indexListTemp.push(i);
+                    CalculateRouteAccordingToKilometers(i, indexListTemp, startToAutomatDistances[i]);
+                }
+            }
+            else if (document.getElementById("myselect").value == 2) {
+                for (var i = 0; i < fullAutomats.length; i++) {
+                    var indexListTemp = [];
+                    indexListTemp.push(i);
+                    CalculateRouteAccordingToMinutes(i, indexListTemp, startToAutomatTimeArrivals[i]);
+                }
+            }
+            var bestRoute = [];
+            var minDist = Infinity;
+            var maxStop = 0;
+            var bestRouteIndex = 0;
+            if (pathDistance.length == 0)
+                alert("Bu limitte bir rota olusturulamadi");
+            else {
+                for (var i = 0; i < pathDistance.length; i++) {
+                    if (pathIndexList[i].length > maxStop) {
+                        minDist = pathDistance[i];
+                        maxStop = pathIndexList[i].length;
+                        bestRoute = pathIndexList[i];
+                        bestRouteIndex = i;
+                    }
+                    else if (pathIndexList[i].length == maxStop) {
+                        if (pathDistance[i] < minDist) {
+                            minDist = pathDistance[i];
+                            maxStop = pathIndexList[i].length;
+                            bestRoute = pathIndexList[i];
+                            bestRouteIndex = i;
+                        }
+                    }
+                }
                 waypts = [];
-                // get list automats
-                for (var i = 0; i < 1; i++) {
+                if (document.getElementById("myselect").value == 3) {
+                    alert((pathDistance[bestRouteIndex]/1000).toFixed(3) + " kilometrelik rota olusturuldu.");
+                }
+                else {
+                    alert((pathDistance[bestRouteIndex]/60).toFixed(2) + " dakikalik rota olusturuldu.");
+                }
+                for (var i = 0; i < pathIndexList[bestRouteIndex].length; i++) {
                     waypts.push({
-                        location: new google.maps.LatLng(39.98, 32.75),
+                        location: automatOrigins[pathIndexList[bestRouteIndex][i]],
                         stopover: true
                     });
                 }
@@ -423,10 +558,9 @@
                         origin: new google.maps.LatLng(startLat, startLong),
                         destination: new google.maps.LatLng(destinationLat, destinationLong),
                         waypoints: waypts,
-                        optimizeWaypoints: true,
                         travelMode: 'DRIVING'
                     },
-                    function(response, status) {
+                    function (response, status) {
                         if (status === 'OK') {
                             directionsRenderer.setDirections(response);
                         } else {
@@ -434,99 +568,238 @@
                         }
                     });
             }
+        }
 
-            function assignStart() {
-                startLat = currentLat.toFixed(3);
-                startLong = currentLong.toFixed(3);
-                startMarker = lastMarker;
+        function calculateAndDisplayRoute(directionsService, directionsRenderer) {
+            check1 = false;
+            check2 = false;
+            limitm = document.getElementById("numVal").value * 1000;
+            limitt = document.getElementById("numVal").value * 60;
+            var startPoint = [];
+            startPoint.push(startLat+ ", " + startLong);
+            var destinationPoint = [];
+            destinationPoint.push(destinationLat+ ", " + destinationLong);
+            const matrixOptions = {
+                origins: startPoint,
+                destinations: automatOrigins,
+                travelMode: 'DRIVING'
+            };
+            const matrixOptions2 = {
+                origins: automatOrigins,
+                destinations: destinationPoint,
+                travelMode: 'DRIVING'
+            };
+            const service = new google.maps.DistanceMatrixService();
+            service.getDistanceMatrix(matrixOptions, callback);
+            service.getDistanceMatrix(matrixOptions2, callback2);
+            function callback(response, status) {
+                if (status !== "OK") {
+                    alert("Error with distance matrix");
+                    return;
+                }
+                var origins = response.originAddresses;
+                var destinations = response.destinationAddresses;
+                startToAutomatDistances = [];
+                startToAutomatTimeArrivals = [];
+                for (var i = 0; i < origins.length; i++) {
+                    var results = response.rows[i].elements;
+                    for (var j = 0; j < results.length; j++) {
+                        var element = results[j];
+                        var distance = element.distance.value;
+                        var duration = element.duration.value;
+                        var from = origins[i];
+                        var to = destinations[j];
+                        startToAutomatDistances.push(distance);
+                        startToAutomatTimeArrivals.push(duration);
+                    }
+                }
+                check1 = true;
+                if (check2)
+                    StartRecursion();
+            }
+            function callback2(response, status) {
+                if (status !== "OK") {
+                    alert("Error with distance matrix");
+                    return;
+                }
+                var origins = response.originAddresses;
+                var destinations = response.destinationAddresses;
+
+                destinationToAutomatDistances = [];
+                destinationToAutomatTimeArrivals = [];
+                for (var i = 0; i < origins.length; i++) {
+                    var results = response.rows[i].elements;
+                    for (var j = 0; j < results.length; j++) {
+                        var element = results[j];
+                        var distance = element.distance.value;
+                        var duration = element.duration.value;
+                        //var from = origins[i];
+                        //var to = destinations[j];
+                        destinationToAutomatDistances.push(distance);
+                        destinationToAutomatTimeArrivals.push(duration);
+                    }
+                }
+                check2 = true;
+                if (check1)
+                    StartRecursion();
+            }
+        }
+
+        function assignStart() {
+            startLat = currentLat;
+            startLong = currentLong;
+            startMarker = lastMarker;
+            deleteUnnecessaryMarkers();
+            infowindow.close();
+            startWindow.open(map,startMarker);
+            var startPoint = [];
+            startPoint.push(startLat+ ", " + startLong);
+            const matrixOptions = {
+                origins: startPoint,
+                destinations: startPoint,
+                travelMode: 'DRIVING'
+            };
+            const service = new google.maps.DistanceMatrixService();
+            service.getDistanceMatrix(matrixOptions, callback);
+            var origins;
+            function callback(response, status) {
+                if (status !== "OK") {
+                    alert("Error with distance matrix");
+                    return;
+                }
+                origins = response.originAddresses;
+                document.getElementById("baslangic").innerHTML = "Hedef noktasi: " + origins[0];
+            }
+        }
+
+        function getDistanceAndDurationBetweenAutomats() {
+            for (var i = 0; i< automats.length; i++){
+                if (automatCapacity[i] < 50.00) {
+                    automatOrigins.push(automatsLatitude[i] + ", " + automatsLongitude[i]);
+                    fullAutomatsLatitude.push(automatsLatitude[i]);
+                    fullAutomatsLongitude.push(automatsLongitude[i]);
+                    fullAutomats.push(automats[i]);
+                }
+            }
+            const matrixOptions = {
+                origins: automatOrigins, // technician locations
+                destinations: automatOrigins, // customer address
+                travelMode: 'DRIVING'
+            };
+            const service = new google.maps.DistanceMatrixService();
+            // Call Distance Matrix service
+            service.getDistanceMatrix(matrixOptions, callback);
+            function callback(response, status) {
+                if (status !== "OK") {
+                    alert("Error with distance matrix");
+                    return;
+                }
+                var origins = response.originAddresses;
+                var destinations = response.destinationAddresses;
+                for (var i = 0; i < origins.length; i++) {
+                    var automatDistance = [];
+                    var automatTimeArrival = [];
+                    var results = response.rows[i].elements;
+                    for (var j = 0; j < results.length; j++) {
+                        var element = results[j];
+                        var distance = element.distance.value;
+                        var duration = element.duration.value;
+                        var from = origins[i];
+                        var to = destinations[j];
+                        automatDistance.push(distance);
+                        automatTimeArrival.push(duration);
+                    }
+                    automatDistances.push(automatDistance);
+                    automatTimeArrivals.push(automatTimeArrival);
+                }
+            }
+        }
+
+        function getLocations() {
+            <%  double latitude= 39.9334; double longitude=32.8597; double capacity=100.0;String automatID="";%>
+            <% List<Automat> automatList = AutomatClient.listAutomats();
+             for (int i = 0; i < automatList.size(); i++) {
+                capacity = automatList.get(i).getCapacity();
+                Location location = automatList.get(i).getLocation();
+                automatID = automatList.get(i).getId();
+                if (location != null) {
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+                }
+            %>
+            automatsList=<%= "\"" + automatList + "\""%>;
+            automatId=<%= "\"" + automatID + "\""%>;
+            latitude=<%= "\"" + latitude + "\""%>;
+            longitude= <%= "\"" + longitude + "\""%>;
+            var capacity = <%= "\"" + capacity + "\""%>;
+            automatsLongitude.push(longitude);
+            automatsLatitude.push(latitude);
+            automatCapacity.push(capacity);
+            automats.push([automatId]);
+            <%} %>
+        }
+
+
+        function myMap() {
+
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer();
+            var mapProp= {
+                center:new google.maps.LatLng(39.9334,32.8597),
+                zoom:15,
+            };
+
+            infowindow = new google.maps.InfoWindow({
+                content: "\n" +
+                    "    <button onclick=\"assignStart()\"><p>baslangic noktasi olarak sec</p></button>\n" +
+                    "    <p> </p>" +
+                    "    <button onclick=\"assignFinish()\"><p>hedef noktasi olarak sec</p></button>\n"
+            });
+
+            startWindow =  new google.maps.InfoWindow({
+                content: "<p>Baslangic</p>"
+            });
+
+            destWindow =  new google.maps.InfoWindow({
+                content: "<p>Hedef</p>"
+            });
+
+            map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
+            getLocations();
+            getDistanceAndDurationBetweenAutomats();
+            addMarkerForAutomats();
+            google.maps.event.addListener(map, 'click', function(event) {
                 deleteUnnecessaryMarkers();
-                infowindow.close();
-                startWindow.open(map,startMarker);
-                document.getElementById("baslangic").innerHTML = "Baslangic noktasi: " + startLat + "," + startLong;
+                addMarker(event.latLng);
+            });
+
+            directionsRenderer.setMap(map);
+
+            function addMarker(location) {
+                var marker = new google.maps.Marker({
+                    position: location,
+                    map: map,
+                });
+                currentLat = location.lat();
+                currentLong = location.lng();
+                markers.push(marker);
+                lastMarker = marker;
+                infowindow.open(map,marker);
             }
+            function addMarkerForAutomats() {
+                var marker, i;
 
-            function getLocations() {
-                <%  double latitude= 39.9334; double longitude=32.8597; String automatID="";%>
-                <% List<Automat> automatList = AutomatClient.listAutomats();
-                 for (int i = 0; i < automatList.size(); i++) {
-                    Location location = automatList.get(i).getLocation();
-                    automatID = automatList.get(i).getId();
-                    if (location != null) {
-                    latitude = location.getLatitude();
-                    longitude = location.getLongitude();
-                    }
-                %>
-                automatsList=<%= "\"" + automatList + "\""%>;
-                automatId=<%= "\"" + automatID + "\""%>;
-                latitude=<%= "\"" + latitude + "\""%>;
-                longitude= <%= "\"" + longitude + "\""%>;
-                automatsLongitude.push(longitude);
-                automatsLatitude.push(latitude);
-                automats.push([automatId]);
-
-                <%} %>
-            }
-
-
-            function myMap() {
-
-                directionsService = new google.maps.DirectionsService();
-                directionsRenderer = new google.maps.DirectionsRenderer();
-                var mapProp= {
-                    center:new google.maps.LatLng(39.9334,32.8597),
-                    zoom:15,
-                };
-
-                infowindow = new google.maps.InfoWindow({
-                    content: "\n" +
-                        "    <button onclick=\"assignStart()\"><p>baslangic noktasi olarak sec</p></button>\n" +
-                        "    <p> </p>" +
-                        "    <button onclick=\"assignFinish()\"><p>hedef noktasi olarak sec</p></button>\n"
-                });
-
-                startWindow =  new google.maps.InfoWindow({
-                    content: "<p>Baslangic</p>"
-                });
-
-                destWindow =  new google.maps.InfoWindow({
-                    content: "<p>Hedef</p>"
-                });
-
-                map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
-                getLocations();
-                addMarkerForAutomats();
-                google.maps.event.addListener(map, 'click', function(event) {
-                    deleteUnnecessaryMarkers();
-                    addMarker(event.latLng);
-                });
-
-                directionsRenderer.setMap(map);
-
-                function addMarker(location) {
-                    var marker = new google.maps.Marker({
-                        position: location,
+                for(i=0; i<automats.length; i++) {
+                    var marker_position = new google.maps.LatLng(automatsLatitude[i], automatsLongitude[i]);
+                    marker = new google.maps.Marker({
+                        position: marker_position,
                         map: map,
+                        title: "Otomat id: " + automats[i][0] + "\nKullanilabilir kapasite: " + automatCapacity[i]
                     });
-                    currentLat = location.lat();
-                    currentLong = location.lng();
-                    markers.push(marker);
-                    lastMarker = marker;
-                    infowindow.open(map,marker);
-                }
-                function addMarkerForAutomats() {
-                    var marker, i;
-
-                    for(i=0; i<automats.length; i++) {
-                        var marker_position = new google.maps.LatLng(automatsLatitude[i], automatsLongitude[i]);
-                        marker = new google.maps.Marker({
-                            position: marker_position,
-                            map: map,
-                            title: automats[i][0]
-                        });
-                    }
                 }
             }
-        </script>
+        }
+    </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyACOig7L9sTXy_HengcjO03Gq6CDWZNB2A&callback=myMap"></script>
 </div>
 </body>
