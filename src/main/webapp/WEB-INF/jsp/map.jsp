@@ -2,6 +2,8 @@
 <%@ page import="com.sirius.web.model.Automat" %>
 <%@ page import="com.sirius.web.service.AutomatService" %>
 <%@ page import="com.sirius.web.utils.AutomatClient" %>
+<%@ page import="com.sirius.web.model.Location" %>
+<%@ page import="java.util.ArrayList" %>
 <html lang="en">
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -48,7 +50,7 @@
 </head>
 
 <body>
-<div class="wrapper" style="margin: 50px 50px 175px 300px">
+<div class="wrapper" style="margin: 15px 50px 0px 300px">
     <div class="sidebar" data-color="green" data-background-color="white" data-image="img/sidebar-1.jpg">
         <!--
           Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
@@ -79,9 +81,43 @@
                         <p>Rota Olustur</p>
                     </a>
                 </li>
+                <li class="nav-item  ">
+                    <a class="nav-link" href="/report">
+                        <i class="material-icons">report</i>
+                        <p>Raporlar</p>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
+    <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top " >
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="navbar-toggler-icon icon-bar"></span>
+                <span class="navbar-toggler-icon icon-bar"></span>
+                <span class="navbar-toggler-icon icon-bar"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end">
+                <ul class="navbar-nav" >
+                    <li class="nav-item dropdown" >
+                        <a class="nav-link" href="#pablo" id="navbarDropdownProfile"  data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            <i class="material-icons">person</i>
+                            <p class="d-lg-none d-md-block">
+                                Account
+                            </p>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
+                            <a class="dropdown-item"  href="/">Log out</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
     <div class="fixed-plugin">
         <!--   Core JS Files   -->
         <script src="js/core/jquery.min.js"></script>
@@ -259,17 +295,238 @@
             });
         </script>
     </div>
-    <div id="googleMap" style="width: 100%;height:600px;"></div>
-    <script>
-        function myMap() {
-            var mapProp= {
-                center:new google.maps.LatLng(51.508742,-0.120850),
-                zoom:5,
-            };
-            var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
-        }
-    </script>
 
+        <script>
+            function changeSelection(){
+                if (document.getElementById("myselect").value == 2)
+                    document.getElementById("numVal").placeholder = "Kapasite(litre)";
+                else if (document.getElementById("myselect").value == 3)
+                    document.getElementById("numVal").placeholder = "Kilometre";
+                else
+                    document.getElementById("numVal").placeholder = "Degeri giriniz";
+            }
+
+            function rotalama() {
+                if (document.getElementById("myselect").value == 1)
+                    alert("Rota olusturma yontemi seciniz.");
+                else if (document.getElementById("myselect").value == 2){
+                    if (document.getElementById("numVal").value <= 0){
+                        alert("Kapasite 0'a esit veya kucuk olamaz.");
+                    }
+                    else {
+                        calculateAndDisplayRoute(directionsService, directionsRenderer)
+                    }
+                }
+                else if (document.getElementById("myselect").value == 3){
+                    if (document.getElementById("numVal").value <= 0){
+                        alert("Rota uzunlugu 0'a esit veya kucuk olamaz.");
+                    }
+                    else {
+                        calculateAndDisplayRoute(directionsService, directionsRenderer)
+                    }
+                }
+            }
+        </script>
+        <div class="row">
+            <div class="col-md-6">
+                <p id="baslangic" style="font-weight:bold">Baslangic noktasi:</p>
+                <p id="hedef" style="font-weight:bold">Hedef noktasi:</p>
+            </div>
+        </div>
+    </br>
+        <form action="javascript:rotalama();">
+            <div class="row">
+                <div class="col-md-2">
+                    <select name="myselect" onchange="javascript:changeSelection();"style="border-radius: 6px;
+                             height: 40px;overflow: hidden;width: 170px;
+                             border-color:whitesmoke; background-color:whitesmoke;
+                             font-size: smaller; color: darkgrey" id="myselect" >
+                        <option value="1"> Rota olusturma yontemi</option>
+                        <option value="2">Kapasiteye gore olustur</option>
+                        <option value="3">Kilometreye gore olustur</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="number" id="numVal" placeholder="Degeri giriniz" style="font-size: smaller;
+                            height: 40px;overflow: hidden;width: 170px;
+                            border-radius: 6px; border-color:whitesmoke; background-color:whitesmoke;">
+                </div>
+                <div class="col-md-3">
+                <button type="submit" style="font-size: smaller;background-color:#4CAF50; color: white; border-radius: 6px;
+                        margin-right: 0%;height: 40px;overflow: hidden;width: 170px;">Rota Olustur</button>
+                </div>
+            </div>
+        </form>
+
+        <div id="googleMap" style="width: 100%;height:600px;"></div>
+        <script>
+            var startLat;
+            var startLong;
+
+            var destinationLat;
+            var destinationLong;
+
+            var currentLat;
+            var currentLong;
+
+            var startMarker;
+            var destinationMarker;
+            var markers = [];
+            var lastMarker;
+            var map;
+            var destWindow;
+            var startWindow;
+            var infowindow;
+
+            var directionsService;
+            var directionsRenderer;
+
+            var waypts;
+
+            var automatsList = [];
+            var automats = [];
+            var automatId;
+            var latitude;
+            var longitude;
+            var automatsLatitude = [];
+            var automatsLongitude = [];
+
+            function deleteUnnecessaryMarkers(){
+                for (var i = 0; i < markers.length; i++) {
+                    if ((markers[i] != startMarker && markers[i] != destinationMarker)){
+                        markers[i].setMap(null);
+                    }
+                }
+            }
+
+            function assignFinish() {
+                destinationLat = currentLat.toFixed(3);
+                destinationLong = currentLong.toFixed(3);
+                destinationMarker = lastMarker;
+                deleteUnnecessaryMarkers();
+                infowindow.close();
+                destWindow.open(map,destinationMarker);
+                document.getElementById("hedef").innerHTML = "Hedef noktasi: " + destinationLat + ", " + destinationLong;
+            }
+
+            function calculateAndDisplayRoute(directionsService, directionsRenderer) {
+                waypts = [];
+                // get list automats
+                for (var i = 0; i < 1; i++) {
+                    waypts.push({
+                        location: new google.maps.LatLng(39.98, 32.75),
+                        stopover: true
+                    });
+                }
+                directionsService.route(
+                    {
+                        origin: new google.maps.LatLng(startLat, startLong),
+                        destination: new google.maps.LatLng(destinationLat, destinationLong),
+                        waypoints: waypts,
+                        optimizeWaypoints: true,
+                        travelMode: 'DRIVING'
+                    },
+                    function(response, status) {
+                        if (status === 'OK') {
+                            directionsRenderer.setDirections(response);
+                        } else {
+                            window.alert('Directions request failed due to ' + status);
+                        }
+                    });
+            }
+
+            function assignStart() {
+                startLat = currentLat.toFixed(3);
+                startLong = currentLong.toFixed(3);
+                startMarker = lastMarker;
+                deleteUnnecessaryMarkers();
+                infowindow.close();
+                startWindow.open(map,startMarker);
+                document.getElementById("baslangic").innerHTML = "Baslangic noktasi: " + startLat + "," + startLong;
+            }
+
+            function getLocations() {
+                <%  double latitude= 39.9334; double longitude=32.8597; String automatID="";%>
+                <% List<Automat> automatList = AutomatClient.listAutomats();
+                 for (int i = 0; i < automatList.size(); i++) {
+                    Location location = automatList.get(i).getLocation();
+                    automatID = automatList.get(i).getId();
+                    if (location != null) {
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
+                    }
+                %>
+                automatsList=<%= "\"" + automatList + "\""%>;
+                automatId=<%= "\"" + automatID + "\""%>;
+                latitude=<%= "\"" + latitude + "\""%>;
+                longitude= <%= "\"" + longitude + "\""%>;
+                automatsLongitude.push(longitude);
+                automatsLatitude.push(latitude);
+                automats.push([automatId]);
+
+                <%} %>
+            }
+
+
+            function myMap() {
+
+                directionsService = new google.maps.DirectionsService();
+                directionsRenderer = new google.maps.DirectionsRenderer();
+                var mapProp= {
+                    center:new google.maps.LatLng(39.9334,32.8597),
+                    zoom:15,
+                };
+
+                infowindow = new google.maps.InfoWindow({
+                    content: "\n" +
+                        "    <button onclick=\"assignStart()\"><p>baslangic noktasi olarak sec</p></button>\n" +
+                        "    <p> </p>" +
+                        "    <button onclick=\"assignFinish()\"><p>hedef noktasi olarak sec</p></button>\n"
+                });
+
+                startWindow =  new google.maps.InfoWindow({
+                    content: "<p>Baslangic</p>"
+                });
+
+                destWindow =  new google.maps.InfoWindow({
+                    content: "<p>Hedef</p>"
+                });
+
+                map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
+                getLocations();
+                addMarkerForAutomats();
+                google.maps.event.addListener(map, 'click', function(event) {
+                    deleteUnnecessaryMarkers();
+                    addMarker(event.latLng);
+                });
+
+                directionsRenderer.setMap(map);
+
+                function addMarker(location) {
+                    var marker = new google.maps.Marker({
+                        position: location,
+                        map: map,
+                    });
+                    currentLat = location.lat();
+                    currentLong = location.lng();
+                    markers.push(marker);
+                    lastMarker = marker;
+                    infowindow.open(map,marker);
+                }
+                function addMarkerForAutomats() {
+                    var marker, i;
+
+                    for(i=0; i<automats.length; i++) {
+                        var marker_position = new google.maps.LatLng(automatsLatitude[i], automatsLongitude[i]);
+                        marker = new google.maps.Marker({
+                            position: marker_position,
+                            map: map,
+                            title: automats[i][0]
+                        });
+                    }
+                }
+            }
+        </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyACOig7L9sTXy_HengcjO03Gq6CDWZNB2A&callback=myMap"></script>
 </div>
 </body>
