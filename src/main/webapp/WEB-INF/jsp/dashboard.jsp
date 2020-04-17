@@ -134,11 +134,11 @@
                                                 "                                       margin-right: auto; margin-top: 20%; width=\"193\" height=\"130\" img src=\"images/recycle.jpg\"" + "\">\n" +
                                                 "                            </div>\n" +
                                                 "                            <div class=\"card-body\">\n" +
-                                                "                    <a class=\"nav-link\" href=\"/automatDetails?automatId=" + automatList.get(i).getId() + "\">\n" +
-                                                "                                <h4 class=\"card-title\">\n" +
+                                                "<div style=\"font-weight:bold; font-size:15px\">\n"
+                                                +
                                                 "Otomat : " + automatList.get(i).getId() +
-                                                "                                </h4>\n" +
-                                                "                    </a>\n" +
+                                                "                        </div>\n"
+                                                +
                                                 "                                <p class=\"card-category\">\n" + "Toplam otomat kapasitesi : " +
                                                 automatList.get(i).getOverallVolume() +
                                                 "                                </p>\n" +

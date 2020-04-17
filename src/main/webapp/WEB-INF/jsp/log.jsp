@@ -145,17 +145,6 @@
         </nav>
         <div class="content">
             <div class="container-fluid">
-                <div class="row">
-                    <select name="myselect" onchange="javascript:changeSelection();"style="border-radius: 6px;
-                             height: 40px;overflow: hidden;width: 170px;
-                             border-color:whitesmoke; background-color:whitesmoke;
-                             font-size: smaller; color: darkgrey" id="myselect" >
-                        <option value="1"> Hepsi</option>
-                        <option value="2"> Otomat</option>
-                        <option value="3">Kullanici</option>
-                        <option value="4">Sise</option>
-                    </select>
-                </div>
                 <div class="card" style="width: 100%;">
                     <div class="card-body">
                         <div class="table-responsive">
@@ -260,17 +249,27 @@
                                             }
                                         }
                                     }
-                                    function typeFilter() {
+                                    function bodyFilter() {
                                         var input, filter, table, tr, td, i, txtValue, td1;
-                                        input = document.getElementById("tip");
+                                        input = document.getElementById("mesaj");
                                         filter = input.value.toUpperCase();
                                         table = document.getElementById("myTable");
                                         tr = table.getElementsByTagName("tr");
                                         for (i = 0; i < tr.length; i++) {
-                                            td = tr[i].getElementsByTagName("td")[4];
+                                            td = tr[i].getElementsByTagName("td")[3];
                                             if (td) {
                                                 txtValue = td.textContent || td.innerText;
-                                                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                                var wordList = filter.split(" ");
+                                                //alert(wordList.length);
+                                                var addWord = true;
+                                                for (var k = 0; k< wordList.length; k++) {
+                                                    if (txtValue.toUpperCase().indexOf(wordList[k]) < 0) {
+                                                        addWord = false;
+                                                        //alert("Burda");
+                                                        break;
+                                                    }
+                                                }
+                                                if (addWord) {
                                                     tr[i].style.display = "";
                                                 } else {
                                                     tr[i].style.display = "none";
