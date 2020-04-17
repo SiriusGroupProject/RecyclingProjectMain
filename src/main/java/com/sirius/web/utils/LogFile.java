@@ -20,32 +20,39 @@ public class LogFile {
 
     public static ArrayList<ArrayList<String>> list() throws IOException {
 
-            Date today = Calendar.getInstance().getTime();
-            String dateFormat = "yyyy-MM-dd";
-            DateFormat df = new SimpleDateFormat(dateFormat);
-            todayDate = df.format(today);
-            ArrayList<ArrayList<String>> list = new ArrayList<>(4);
-            FileInputStream fstream = new FileInputStream("D:\\logs\\sirius_"+todayDate+".log");
-            BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
-            String strLine;
-            int counter = 0;
-            while ((strLine = br.readLine()) != null)   {
+        Date today = Calendar.getInstance().getTime();
+        String dateFormat = "yyyy-MM-dd";
+        DateFormat df = new SimpleDateFormat(dateFormat);
+        todayDate = df.format(today);
+        ArrayList<ArrayList<String>> list = new ArrayList<>(4);
+        FileInputStream fstream = new FileInputStream("D:\\logs\\sirius_"+todayDate+".log");
+        BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
+        String strLine;
+        int counter = 0;
+        while ((strLine = br.readLine()) != null)   {
+            try {
+                date = strLine.substring(0, strLine.indexOf(' '));
+                temp = strLine.substring(strLine.indexOf(' ') + 1);
+                time = temp.substring(0, temp.indexOf(' '));
+                temp = temp.substring(temp.indexOf(' ') + 1).trim();
+                info = temp.substring(0, temp.indexOf(' '));
+                temp = temp.substring(temp.indexOf(' ') + 1);
+                temp = temp.substring(temp.indexOf(' ') + 1);
+                body = temp.substring(temp.indexOf(' ') + 1);
+                DateFormat dateFormat1 = new SimpleDateFormat("HH:mm:ss.SSS");
+                Date saat = dateFormat1.parse(time);
                 list.add(new ArrayList());
-                date = strLine.substring(0,strLine.indexOf(' '));
-                temp = strLine.substring(strLine.indexOf(' ')+1);
-                time = temp.substring(0,temp.indexOf(' '));
-                temp = temp.substring(temp.indexOf(' ')+1).trim();
-                info = temp.substring(0,temp.indexOf(' '));
-                temp = temp.substring(temp.indexOf(' ')+1);
-                temp = temp.substring(temp.indexOf(' ')+1);
-                body = temp.substring(temp.indexOf(' ')+1);
                 list.get(counter).add(date);
                 list.get(counter).add(time);
                 list.get(counter).add(info);
                 list.get(counter).add(body);
                 counter++;
             }
-            fstream.close();
+            catch(Exception e){
+
+            }
+        }
+        fstream.close();
 
         return list;
     }
