@@ -148,7 +148,7 @@
                 <div class="card" style="width: 100%;">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table  id="myTable" class="table" onload="javascript:changeSelection()">
+                            <table  id="myTable" class="table">
                                 <thead style="font-weight:bold">
                                 <tr>
                                     <th style="font-size:20px">#</th>
@@ -231,14 +231,14 @@
                                             }
                                         }
                                     }
-                                    function bodyFilter() {
+                                    function typeFilter() {
                                         var input, filter, table, tr, td, i, txtValue, td1;
-                                        input = document.getElementById("mesaj");
+                                        input = document.getElementById("tip");
                                         filter = input.value.toUpperCase();
                                         table = document.getElementById("myTable");
                                         tr = table.getElementsByTagName("tr");
                                         for (i = 0; i < tr.length; i++) {
-                                            td = tr[i].getElementsByTagName("td")[3];
+                                            td = tr[i].getElementsByTagName("td")[4];
                                             if (td) {
                                                 txtValue = td.textContent || td.innerText;
                                                 if (txtValue.toUpperCase().indexOf(filter) > -1) {
@@ -276,18 +276,6 @@
                                                 }
                                             }
                                         }
-                                    }
-                                    function showTable(){
-                                        document.getElementById('myTable').style.visibility = "visible";
-                                    }
-                                    function hideTable(){
-                                        document.getElementById('myTable').style.visibility = "hidden";
-                                    }
-                                    function changeSelection(){
-                                        if (document.getElementById("myselect").value == 1)
-                                            showTable();
-                                        else
-                                            hideTable();
                                     }
                                 </script>
                                 </tbody>
