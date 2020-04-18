@@ -1,6 +1,8 @@
 <%@ page import="com.sirius.web.utils.LogFile" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="lombok.extern.java.Log" %>
+<%@ page import="java.util.Collection" %>
+<%@ page import="java.util.stream.Collectors" %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -42,6 +44,31 @@
     <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css'
           integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
 
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        #tarih , #saat ,#tip{
+            background-position: 10px 10px;
+            background-repeat: no-repeat;
+            width: 90%;
+            font-size: 16px;
+            padding: 5px 5px 5px 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 12px;
+        }
+        #mesaj {
+            background-position: 10px 10px;
+            background-repeat: no-repeat;
+            width: 90%;
+            font-size: 16px;
+            padding: 5px 5px 5px 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 12px;
+        }
+    </style>
 </head>
 
 <body class="">
@@ -121,47 +148,136 @@
                 <div class="card" style="width: 100%;">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table">
+                            <table  id="myTable" class="table">
                                 <thead style="font-weight:bold">
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Tarih</th>
-                                        <th>Saat</th>
-                                        <th>Mesaj</th>
-                                        <th>Tip</th>
-                                    </tr>
+                                <tr>
+                                    <th style="font-size:20px">#</th>
+                                    <th style="width:10%;font-size:20px">Tarih</th>
+                                    <th style="font-size:20px">Saat</th>
+                                    <th style="font-size:20px">Mesaj</th>
+                                    <th style="width:5%;font-size:20px">Tip</th>
+                                </tr>
+                                <tr>
+                                    <th> </th>
+                                    <th style="width:10%;"><input type="text" id="tarih" onkeyup="dateFilter()" placeholder="Tarih.."></th>
+                                    <th><input type="text" id="saat" onkeyup="timeFilter()" placeholder="Saat.."></th>
+                                    <th>  <input type="text" id="mesaj" onkeyup="bodyFilter()" placeholder="Mesaj.."></th>
+                                    <th style="width:5%;"><input type="text" id="tip" onkeyup="typeFilter()" placeholder="Tip.."></th>
+                                </tr>
                                 </thead>
-                                <tbody>
-
-                                        <%
-                                            ArrayList<ArrayList<String>> list = LogFile.list();
-                                            int numberList = 1;
-                                            for (int i = 0; i < list.size(); i++) {
-                                                out.println("<tr>");
-                                                out.println("<td>"+numberList+"</td>");
-                                                out.println("<td>"+list.get(i).get(0)+"</td>");
-                                                out.println("<td>"+list.get(i).get(1)+"</td>");
-                                                out.println("<td>"+list.get(i).get(3)+"</td>");
-                                                if (list.get(i).get(2).equals("INFO")) {
-                                                    out.println("<td> <button type=\"button\" rel=\"tooltip\" class=\"btn btn-info\">\n" +
-                                                            "                                            <i class=\"material-icons\">done</i>\n" +
-                                                            "                                        </button></td>");
+                                <tbody >
+                                <%
+                                    ArrayList<ArrayList<String>> list = LogFile.list();
+                                    int numberList = 1;
+                                    for (int i = 0; i < list.size(); i++) {
+                                        out.println("<tr>");
+                                        out.println("<td>"+numberList+"</td>");
+                                        out.println("<td>"+list.get(i).get(0)+"</td>");
+                                        out.println("<td>"+list.get(i).get(1)+"</td>");
+                                        out.println("<td>"+list.get(i).get(3)+"</td>");
+                                        if (list.get(i).get(2).equals("INFO")) {
+                                            out.println("<td> <button type=\"button\" rel=\"tooltip\" class=\"btn btn-info\">\n" +
+                                                    "                                            INFO\n" +
+                                                    "                                        </button></td>");
+                                        }
+                                        else if(list.get(i).get(2).equals("WARN")){
+                                            out.println("<td> <button type=\"button\" rel=\"tooltip\" class=\"btn btn-warning\">\n" +
+                                                    "                                            WARN\n" +
+                                                    "                                        </button></td>");
+                                        }
+                                        else{
+                                            out.println("<td> <button type=\"button\" rel=\"tooltip\" class=\"btn btn-danger\">\n" +
+                                                    "                                            ERROR\n" +
+                                                    "                                        </button></td>");
+                                        }
+                                        out.println("</tr>");
+                                        numberList++;
+                                    }
+                                %>
+                                <script>
+                                    function dateFilter() {
+                                        var input, filter, table, tr, td, i, txtValue, td1;
+                                        input = document.getElementById("tarih");
+                                        filter = input.value.toUpperCase();
+                                        table = document.getElementById("myTable");
+                                        tr = table.getElementsByTagName("tr");
+                                        for (i = 0; i < tr.length; i++) {
+                                            td = tr[i].getElementsByTagName("td")[1];
+                                            if (td) {
+                                                txtValue = td.textContent || td.innerText;
+                                                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                                    tr[i].style.display = "";
+                                                } else {
+                                                    tr[i].style.display = "none";
                                                 }
-                                                else if(list.get(i).get(2).equals("WARN")){
-                                                    out.println("<td> <button type=\"button\" rel=\"tooltip\" class=\"btn btn-warning\">\n" +
-                                                            "                                            <i class=\"material-icons\">priority_high</i>\n" +
-                                                            "                                        </button></td>");
-                                                }
-                                                else{
-                                                    out.println("<td> <button type=\"button\" rel=\"tooltip\" class=\"btn btn-danger\">\n" +
-                                                            "                                            <i class=\"material-icons\">close</i>\n" +
-                                                            "                                        </button></td>");
-                                                }
-                                                out.println("</tr>");
-                                                numberList++;
                                             }
-                                        %>
-
+                                        }
+                                    }
+                                    function timeFilter() {
+                                        var input, filter, table, tr, td, i, txtValue, td1;
+                                        input = document.getElementById("saat");
+                                        filter = input.value.toUpperCase();
+                                        table = document.getElementById("myTable");
+                                        tr = table.getElementsByTagName("tr");
+                                        for (i = 0; i < tr.length; i++) {
+                                            td = tr[i].getElementsByTagName("td")[2];
+                                            if (td) {
+                                                txtValue = td.textContent || td.innerText;
+                                                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                                    tr[i].style.display = "";
+                                                } else {
+                                                    tr[i].style.display = "none";
+                                                }
+                                            }
+                                        }
+                                    }
+                                    function typeFilter() {
+                                        var input, filter, table, tr, td, i, txtValue, td1;
+                                        input = document.getElementById("tip");
+                                        filter = input.value.toUpperCase();
+                                        table = document.getElementById("myTable");
+                                        tr = table.getElementsByTagName("tr");
+                                        for (i = 0; i < tr.length; i++) {
+                                            td = tr[i].getElementsByTagName("td")[4];
+                                            if (td) {
+                                                txtValue = td.textContent || td.innerText;
+                                                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                                    tr[i].style.display = "";
+                                                } else {
+                                                    tr[i].style.display = "none";
+                                                }
+                                            }
+                                        }
+                                    }
+                                    function bodyFilter() {
+                                        var input, filter, table, tr, td, i, txtValue, td1;
+                                        input = document.getElementById("mesaj");
+                                        filter = input.value.toUpperCase();
+                                        table = document.getElementById("myTable");
+                                        tr = table.getElementsByTagName("tr");
+                                        for (i = 0; i < tr.length; i++) {
+                                            td = tr[i].getElementsByTagName("td")[3];
+                                            if (td) {
+                                                txtValue = td.textContent || td.innerText;
+                                                var wordList = filter.split(" ");
+                                                //alert(wordList.length);
+                                                var addWord = true;
+                                                for (var k = 0; k< wordList.length; k++) {
+                                                    if (txtValue.toUpperCase().indexOf(wordList[k]) < 0) {
+                                                        addWord = false;
+                                                        //alert("Burda");
+                                                        break;
+                                                    }
+                                                }
+                                                if (addWord) {
+                                                    tr[i].style.display = "";
+                                                } else {
+                                                    tr[i].style.display = "none";
+                                                }
+                                            }
+                                        }
+                                    }
+                                </script>
                                 </tbody>
                             </table>
                         </div>
