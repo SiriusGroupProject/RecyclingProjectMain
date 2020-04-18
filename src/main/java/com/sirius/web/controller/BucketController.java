@@ -1,11 +1,13 @@
 package com.sirius.web.controller;
 
+import com.amazonaws.services.s3.model.S3Object;
 import com.sirius.web.service.AmazonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 @RestController
 @RequestMapping("/v1/storage/")
@@ -23,14 +25,14 @@ public class BucketController {
         return this.amazonClient.uploadFile(file);
     }
 
-//    @GetMapping("/getFile")
-//    public String getFile(@RequestPart(value = "url") String fileUrl) {
-//        return this.amazonClient.getFileFromS3Bucket(fileUrl);
-//    }
+    @GetMapping("/getFile")
+    public S3Object getFile(@RequestPart(value = "fileName") String fileName) {
+        return this.amazonClient.getFileFromS3Bucket(fileName);
+    }
 
     @DeleteMapping("/deleteFile")
-    public String deleteFile(@RequestPart(value = "url") String fileUrl) {
-        return this.amazonClient.deleteFileFromS3Bucket(fileUrl);
+    public boolean deleteFile(@RequestPart(value = "fileName") String fileName) {
+        return this.amazonClient.deleteFileFromS3Bucket(fileName);
     }
 
 }

@@ -52,7 +52,6 @@ public class ConnectionServer {
         return false;
     }
 
-    @CrossOrigin(origins = "http://localhost:5000")
     @GetMapping("getConnectedUser/{automatId}")
     public String getConnectedUser(@PathVariable String automatId) {
 
@@ -119,7 +118,6 @@ public class ConnectionServer {
         return false;
     }
 
-    @CrossOrigin(origins = "http://localhost:5000")
     @GetMapping("getScannedBarcode/{connectedUserId}/{automatId}")
     public String getScannedBarcode(@PathVariable String connectedUserId, @PathVariable String automatId) {
 
@@ -140,7 +138,6 @@ public class ConnectionServer {
         return "";
     }
 
-    @CrossOrigin(origins = "http://localhost:5000")
     @PostMapping("bottleVerification/{connectedUserId}/{automatId}/{barcode}/{verified}")
     public boolean bottleVerification(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode, @PathVariable int verified) {
         boolean isDB = isExistsDb(connectedUserId, automatId, barcode);
@@ -190,7 +187,6 @@ public class ConnectionServer {
         return 2;
     }
 
-    @CrossOrigin(origins = "http://localhost:5000")
     @PostMapping("closeOrNewTransaction/{connectedUserId}/{automatId}/{barcode}/{verified}/{result}")
     public boolean closeOrNewTransaction(@PathVariable("connectedUserId") String connectedUserId, @PathVariable("automatId") String automatId, @PathVariable("barcode") String barcode,@PathVariable("verified") int verified, @PathVariable int result) {
         boolean isDB = isExistsDb(connectedUserId, automatId, barcode);
@@ -249,7 +245,6 @@ public class ConnectionServer {
         return 2;
     }
 
-    @CrossOrigin(origins = "http://localhost:5000")
     @GetMapping("waitingForResult/{automatId}")
     public boolean waitingForResult(@PathVariable String automatId) {
         boolean isDB = isExistsDb(automatId);
@@ -293,7 +288,6 @@ public class ConnectionServer {
         return false;
     }
 
-    @CrossOrigin(origins = "http://localhost:5000")
     @PostMapping("directlyCloseConnection/{automatId}")
     public boolean directlyCloseConnection(@PathVariable String automatId) {
         Automat dbAutomat = automatService.findAutomatById(automatId);
@@ -307,7 +301,6 @@ public class ConnectionServer {
         return false;
     }
 
-    @CrossOrigin(origins = "http://localhost:5000")
     @PostMapping("closeAllConnection")
     public boolean closeAllConnection() {
         List<Automat> automats = automatService.getAllAutomats();
