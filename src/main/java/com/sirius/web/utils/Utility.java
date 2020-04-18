@@ -1,6 +1,6 @@
 package com.sirius.web.utils;
 
-public class Util {
+public class Utility {
 
     public static String trace(StackTraceElement e[]) {
         boolean doNext = false;

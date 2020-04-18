@@ -2,7 +2,7 @@ package com.sirius.web.controller;
 
 import com.sirius.web.model.Bottle;
 import com.sirius.web.service.BottleService;
-import com.sirius.web.utils.Util;
+import com.sirius.web.utils.Utility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +30,10 @@ public class BottleController implements Serializable {
         final List<Bottle> bottles = bottleService.getAllBottles();
 
         if(bottles == null) {
-            logger.error("&" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Registered bottles could not be listed");
+            logger.error("&" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Registered bottles could not be listed");
             return new ResponseEntity<List<Bottle>>(HttpStatus.NOT_FOUND);
         }
-        logger.info("&" + Util.trace(Thread.currentThread().getStackTrace()) + " ***List of registered automats : " + bottles);
+        logger.info("&" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***List of registered automats : " + bottles);
         return new ResponseEntity<List<Bottle>>(bottles, HttpStatus.OK);
     }
 
@@ -42,10 +42,10 @@ public class BottleController implements Serializable {
 
         if (bottle.getBarcode() != null && bottle.getBarcode().length() != 0 && !bottleService.exists(bottle.getBarcode())) {
             final Bottle dbBottle = bottleService.createBottle(bottle);
-            logger.info("%" + bottle.getBarcode() + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***New bottle has been created. Information of the new bottle : " + bottle);
+            logger.info("%" + bottle.getBarcode() + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***New bottle has been created. Information of the new bottle : " + bottle);
             return new ResponseEntity<Bottle>(dbBottle, HttpStatus.CREATED);
         } else {
-            logger.error("%" + bottle.getBarcode() + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Failed to create new bottle");
+            logger.error("%" + bottle.getBarcode() + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Failed to create new bottle");
             return new ResponseEntity<Bottle>(HttpStatus.BAD_REQUEST);
         }
 
@@ -55,10 +55,10 @@ public class BottleController implements Serializable {
     public ResponseEntity<Bottle> getBottle(@PathVariable String barcode) {
         final Bottle dbBottle = bottleService.findBottleByBarcode(barcode);
         if (dbBottle != null) {
-            logger.info("%" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Bottle information : " + dbBottle);
+            logger.info("%" + barcode + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Bottle information : " + dbBottle);
             return new ResponseEntity<Bottle>(dbBottle, HttpStatus.OK);
         } else {
-            logger.error("%" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Bottle information not found");
+            logger.error("%" + barcode + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Bottle information not found");
             return new ResponseEntity<Bottle>(HttpStatus.NOT_FOUND);
         }
     }
@@ -69,10 +69,10 @@ public class BottleController implements Serializable {
         final boolean isExist = bottleService.exists(bottle.getBarcode());
         if (isExist) {
             bottleService.updateBottle(bottle);
-            logger.info("%" + bottle.getBarcode() + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Bottle information has been updated");
+            logger.info("%" + bottle.getBarcode() + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Bottle information has been updated");
             return new ResponseEntity<Bottle>(bottle, HttpStatus.OK);
         } else {
-            logger.error("%" + bottle.getBarcode() + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Not found in database");
+            logger.error("%" + bottle.getBarcode() + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Not found in database");
             return new ResponseEntity<Bottle>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -81,10 +81,10 @@ public class BottleController implements Serializable {
     public ResponseEntity deleteBottle(@RequestParam String barcode){
         if(bottleService.exists(barcode)) {
             bottleService.deleteBottle(barcode);
-            logger.info("%" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***The bottle has been deleted");
+            logger.info("%" + barcode + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***The bottle has been deleted");
             return new ResponseEntity(true, HttpStatus.OK);
         } else {
-            logger.error("%" + barcode + " &" + Util.trace(Thread.currentThread().getStackTrace()) + " ***Not found in database");
+            logger.error("%" + barcode + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Not found in database");
             return new ResponseEntity(false, HttpStatus.BAD_REQUEST);
         }
     }
@@ -92,7 +92,7 @@ public class BottleController implements Serializable {
     @DeleteMapping("deleteAll")
     public ResponseEntity deleteAll() {
         bottleService.deleteAll();
-        logger.info("&" + Util.trace(Thread.currentThread().getStackTrace()) + " ***All bottles have been deleted");
+        logger.info("&" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***All bottles have been deleted");
         return new ResponseEntity(true, HttpStatus.NO_CONTENT);
     }
 
