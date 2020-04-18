@@ -25,7 +25,7 @@ public class LogFile {
         DateFormat df = new SimpleDateFormat(dateFormat);
         todayDate = df.format(today);
         ArrayList<ArrayList<String>> list = new ArrayList<>(4);
-        FileInputStream fstream = new FileInputStream("D:\\logs\\sirius_"+todayDate+".log");
+        FileInputStream fstream = new FileInputStream("D:\\logs\\sirius_"+todayDate+".log"); // change here
         BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
         String strLine;
         int counter = 0;
