@@ -50,16 +50,7 @@
             box-sizing: border-box;
         }
 
-        #tarih , #saat ,#tip{
-            background-position: 10px 10px;
-            background-repeat: no-repeat;
-            width: 90%;
-            font-size: 16px;
-            padding: 5px 5px 5px 5px;
-            border: 1px solid #ddd;
-            margin-bottom: 12px;
-        }
-        #mesaj {
+        #otomatid , #otomatlokasyon ,#sayi{
             background-position: 10px 10px;
             background-repeat: no-repeat;
             width: 90%;
@@ -103,13 +94,13 @@
                         <p>Rota Olustur</p>
                     </a>
                 </li>
-                <li class="nav-item active">
+                <li class="nav-item ">
                     <a class="nav-link" href="/report">
                         <i class="material-icons">report</i>
                         <p>Raporlar</p>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item active">
                     <a class="nav-link" href="/data">
                         <i class="material-icons">assessment</i>
                         <p>Veriler</p>
@@ -157,53 +148,36 @@
                             <table  id="myTable" class="table">
                                 <thead style="font-weight:bold">
                                 <tr>
-                                    <th style="font-size:20px">#</th>
-                                    <th style="width:10%;font-size:20px">Tarih</th>
-                                    <th style="font-size:20px">Saat</th>
-                                    <th style="font-size:20px">Mesaj</th>
-                                    <th style="width:5%;font-size:20px">Tip</th>
+                                    <th style="width:5%;font-size:20px">#</th>
+                                    <th style="width:15%;font-size:20px">Otomat ID</th>
+                                    <th style="width:15%;font-size:20px">Otomat Lokasyonu</th>
+                                    <th style="width:15%;font-size:20px">Atilan Sise Sayisi</th>
                                 </tr>
                                 <tr>
                                     <th> </th>
-                                    <th style="width:10%;"><input type="text" id="tarih" onkeyup="dateFilter()" placeholder="Tarih.."></th>
-                                    <th><input type="text" id="saat" onkeyup="timeFilter()" placeholder="Saat.."></th>
-                                    <th>  <input type="text" id="mesaj" onkeyup="bodyFilter()" placeholder="Mesaj.."></th>
-                                    <th style="width:5%;"><input type="text" id="tip" onkeyup="typeFilter()" placeholder="Tip.."></th>
+                                    <th style="width:10%;"><input type="text" id="otomatid" onkeyup="idFilter()" placeholder="ID.."></th>
+                                    <th><input type="text" id="otomatlokasyon" onkeyup="lokasyonFilter()" placeholder="Lokasyon.."></th>
+                                    <th>  <input type="text" id="sayi" onkeyup="sayiFilter()" placeholder="Sayi.."></th>
                                 </tr>
                                 </thead>
                                 <tbody >
                                 <%
-                                    ArrayList<ArrayList<String>> list = LogFile.list();
+                                    ArrayList<ArrayList<String>> list = LogFile.listAutomats();
                                     int numberList = 1;
                                     for (int i = 0; i < list.size(); i++) {
                                         out.println("<tr>");
                                         out.println("<td>"+numberList+"</td>");
                                         out.println("<td>"+list.get(i).get(0)+"</td>");
                                         out.println("<td>"+list.get(i).get(1)+"</td>");
-                                        out.println("<td>"+list.get(i).get(3)+"</td>");
-                                        if (list.get(i).get(2).equals("INFO")) {
-                                            out.println("<td> <button type=\"button\" rel=\"tooltip\" class=\"btn btn-info\">\n" +
-                                                    "                                            INFO\n" +
-                                                    "                                        </button></td>");
-                                        }
-                                        else if(list.get(i).get(2).equals("WARN")){
-                                            out.println("<td> <button type=\"button\" rel=\"tooltip\" class=\"btn btn-warning\">\n" +
-                                                    "                                            WARN\n" +
-                                                    "                                        </button></td>");
-                                        }
-                                        else{
-                                            out.println("<td> <button type=\"button\" rel=\"tooltip\" class=\"btn btn-danger\">\n" +
-                                                    "                                            ERROR\n" +
-                                                    "                                        </button></td>");
-                                        }
+                                        out.println("<td>"+list.get(i).get(2)+"</td>");
                                         out.println("</tr>");
                                         numberList++;
                                     }
                                 %>
                                 <script>
-                                    function dateFilter() {
+                                    function idFilter() {
                                         var input, filter, table, tr, td, i, txtValue, td1;
-                                        input = document.getElementById("tarih");
+                                        input = document.getElementById("otomatid");
                                         filter = input.value.toUpperCase();
                                         table = document.getElementById("myTable");
                                         tr = table.getElementsByTagName("tr");
@@ -219,9 +193,9 @@
                                             }
                                         }
                                     }
-                                    function timeFilter() {
+                                    function lokasyonFilter() {
                                         var input, filter, table, tr, td, i, txtValue, td1;
-                                        input = document.getElementById("saat");
+                                        input = document.getElementById("otomatlokasyon");
                                         filter = input.value.toUpperCase();
                                         table = document.getElementById("myTable");
                                         tr = table.getElementsByTagName("tr");
@@ -237,27 +211,9 @@
                                             }
                                         }
                                     }
-                                    function typeFilter() {
+                                    function sayiFilter() {
                                         var input, filter, table, tr, td, i, txtValue, td1;
-                                        input = document.getElementById("tip");
-                                        filter = input.value.toUpperCase();
-                                        table = document.getElementById("myTable");
-                                        tr = table.getElementsByTagName("tr");
-                                        for (i = 0; i < tr.length; i++) {
-                                            td = tr[i].getElementsByTagName("td")[4];
-                                            if (td) {
-                                                txtValue = td.textContent || td.innerText;
-                                                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                                                    tr[i].style.display = "";
-                                                } else {
-                                                    tr[i].style.display = "none";
-                                                }
-                                            }
-                                        }
-                                    }
-                                    function bodyFilter() {
-                                        var input, filter, table, tr, td, i, txtValue, td1;
-                                        input = document.getElementById("mesaj");
+                                        input = document.getElementById("sayi");
                                         filter = input.value.toUpperCase();
                                         table = document.getElementById("myTable");
                                         tr = table.getElementsByTagName("tr");
@@ -265,17 +221,7 @@
                                             td = tr[i].getElementsByTagName("td")[3];
                                             if (td) {
                                                 txtValue = td.textContent || td.innerText;
-                                                var wordList = filter.split(" ");
-                                                //alert(wordList.length);
-                                                var addWord = true;
-                                                for (var k = 0; k< wordList.length; k++) {
-                                                    if (txtValue.toUpperCase().indexOf(wordList[k]) < 0) {
-                                                        addWord = false;
-                                                        //alert("Burda");
-                                                        break;
-                                                    }
-                                                }
-                                                if (addWord) {
+                                                if (txtValue.toUpperCase().indexOf(filter) > -1) {
                                                     tr[i].style.display = "";
                                                 } else {
                                                     tr[i].style.display = "none";
@@ -306,13 +252,13 @@
         <script src="js/plugins/jquery.validate.min.js"></script>
         <!-- Plugin for the Wizard, full documentation here: https://github.com/VinceG/twitter-bootstrap-wizard -->
         <script src="js/plugins/jquery.bootstrap-wizard.js"></script>
-        <!--	Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
+        <!--   Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
         <script src="js/plugins/bootstrap-selectpicker.js"></script>
         <!--  Plugin for the DateTimePicker, full documentation here: https://eonasdan.github.io/bootstrap-datetimepicker/ -->
         <script src="js/plugins/bootstrap-datetimepicker.min.js"></script>
         <!--  DataTables.net Plugin, full documentation here: https://datatables.net/  -->
         <script src="js/plugins/jquery.dataTables.min.js"></script>
-        <!--	Plugin for Tags, full documentation here: https://github.com/bootstrap-tagsinput/bootstrap-tagsinputs  -->
+        <!--   Plugin for Tags, full documentation here: https://github.com/bootstrap-tagsinput/bootstrap-tagsinputs  -->
         <script src="js/plugins/bootstrap-tagsinput.js"></script>
         <!-- Plugin for Fileupload, full documentation here: http://www.jasny.net/bootstrap/javascript/#fileinput -->
         <script src="js/plugins/jasny-bootstrap.min.js"></script>
