@@ -50,7 +50,7 @@
             box-sizing: border-box;
         }
 
-        #otomatid , #otomatlokasyon ,#sayı{
+        #otomatid , #otomatlokasyon ,#sayi{
             background-position: 10px 10px;
             background-repeat: no-repeat;
             width: 90%;
@@ -157,19 +157,19 @@
                                     <th> </th>
                                     <th style="width:10%;"><input type="text" id="otomatid" onkeyup="idFilter()" placeholder="ID.."></th>
                                     <th><input type="text" id="otomatlokasyon" onkeyup="lokasyonFilter()" placeholder="Lokasyon.."></th>
-                                    <th>  <input type="text" id="sayı" onkeyup="sayıFilter()" placeholder="Sayi.."></th>
+                                    <th>  <input type="text" id="sayi" onkeyup="sayiFilter()" placeholder="Sayi.."></th>
                                 </tr>
                                 </thead>
                                 <tbody >
                                 <%
-                                    ArrayList<ArrayList<String>> list = LogFile.list();
+                                    ArrayList<ArrayList<String>> list = LogFile.listAutomats();
                                     int numberList = 1;
                                     for (int i = 0; i < list.size(); i++) {
                                         out.println("<tr>");
                                         out.println("<td>"+numberList+"</td>");
-                                        out.println("<td>"+"otomat1"+"</td>");
-                                        out.println("<td>"+"Ankara"+"</td>");
-                                        out.println("<td>"+0+"</td>");
+                                        out.println("<td>"+list.get(i).get(0)+"</td>");
+                                        out.println("<td>"+list.get(i).get(1)+"</td>");
+                                        out.println("<td>"+list.get(i).get(2)+"</td>");
                                         out.println("</tr>");
                                         numberList++;
                                     }
@@ -211,9 +211,9 @@
                                             }
                                         }
                                     }
-                                    function sayıFilter() {
+                                    function sayiFilter() {
                                         var input, filter, table, tr, td, i, txtValue, td1;
-                                        input = document.getElementById("sayı");
+                                        input = document.getElementById("sayi");
                                         filter = input.value.toUpperCase();
                                         table = document.getElementById("myTable");
                                         tr = table.getElementsByTagName("tr");
