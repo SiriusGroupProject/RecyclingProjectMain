@@ -13,6 +13,7 @@ import com.sirius.web.utils.Utility;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("connections")
 public class ConnectionServer {

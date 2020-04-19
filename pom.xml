@@ -123,7 +123,7 @@
         <version>3.0.2</version>
         <configuration>
           <processTypes>
-            <web>java $JAVA_OPTS -cp target/classes:target/dependency/* Main</web>
+            <web>java $JAVA_OPTS -cp target/classes:target/dependency/* com.sirius.web.WebApplication</web>
           </processTypes>
         </configuration>
       </plugin>

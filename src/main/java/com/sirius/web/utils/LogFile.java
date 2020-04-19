@@ -49,7 +49,6 @@ public class LogFile {
             Date todate1 = cal.getTime();
             String fromdate = dateFormat.format(todate1);
             String filename = fromdate + ".log";
-            System.out.println(filename);
             try {
                 s3object = s3Client.getObject(new GetObjectRequest("sirius-bucket", filename));
                 InputStream input = s3object.getObjectContent();
@@ -69,9 +68,7 @@ public class LogFile {
         for (int i = 0; i < logs.size(); i++){
             try {
                 String strLine = logs.get(i);
-                System.out.println(strLine);
                 strLine = strLine.substring(strLine.indexOf("]: ")+3);
-                System.out.println(strLine);
                 date = strLine.substring(0, strLine.indexOf(' '));
                 temp = strLine.substring(strLine.indexOf(' ') + 1);
                 time = temp.substring(0, temp.indexOf(' '));
@@ -110,7 +107,6 @@ public class LogFile {
             Date todate1 = cal.getTime();
             String fromdate = dateFormat.format(todate1);
             String filename = fromdate + ".log";
-            System.out.println(filename);
             try {
                 s3object = s3Client.getObject(new GetObjectRequest("sirius-bucket", filename));
                 InputStream input = s3object.getObjectContent();

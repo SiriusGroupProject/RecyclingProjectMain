@@ -87,6 +87,12 @@
                         <p>Raporlar</p>
                     </a>
                 </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/data">
+                        <i class="material-icons">assessment</i>
+                        <p>Veriler</p>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
@@ -113,12 +119,6 @@
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
                             <a class="dropdown-item"  href="/">Log out</a>
                         </div>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/data">
-                            <i class="material-icons">assessment</i>
-                            <p>Veriler</p>
-                        </a>
                     </li>
                 </ul>
             </div>
