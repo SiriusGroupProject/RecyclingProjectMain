@@ -48,8 +48,26 @@
                     </li>
                     <li class="nav-item  ">
                         <a class="nav-link" href="/insertbottle">
-                            <i class="material-icons">insertbottle</i>
+                            <i class="material-icons">add</i>
                             <p>Sise Ekleme</p>
+                        </a>
+                    </li>
+                    <li class="nav-item  ">
+                        <a class="nav-link" href="/map">
+                            <i class="material-icons">map</i>
+                            <p>Rota Olustur</p>
+                        </a>
+                    </li>
+                    <li class="nav-item  ">
+                        <a class="nav-link" href="/report">
+                            <i class="material-icons">report</i>
+                            <p>Raporlar</p>
+                        </a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="/data">
+                            <i class="material-icons">assessment</i>
+                            <p>Veriler</p>
                         </a>
                     </li>
                 </ul>
@@ -122,11 +140,11 @@
                                                 "                                       margin-right: auto; margin-top: 20%; width=\"193\" height=\"130\" img src=\"images/recycle.jpg\"" + "\">\n" +
                                                 "                            </div>\n" +
                                                 "                            <div class=\"card-body\">\n" +
-                                                "                    <a class=\"nav-link\" href=\"/automatDetails?automatId=" + automatList.get(i).getId() + "\">\n" +
-                                                "                                <h4 class=\"card-title\">\n" +
+                                                "<div style=\"font-weight:bold; font-size:15px\">\n"
+                                                +
                                                 "Otomat : " + automatList.get(i).getId() +
-                                                "                                </h4>\n" +
-                                                "                    </a>\n" +
+                                                "                        </div>\n"
+                                                +
                                                 "                                <p class=\"card-category\">\n" + "Toplam otomat kapasitesi : " +
                                                 automatList.get(i).getOverallVolume() +
                                                 "                                </p>\n" +

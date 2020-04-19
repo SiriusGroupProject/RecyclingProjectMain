@@ -1,7 +1,8 @@
-<%@ page import="java.util.List" %>
-<%@ page import="com.sirius.web.model.Automat" %>
-<%@ page import="com.sirius.web.service.AutomatService" %>
-<%@ page import="com.sirius.web.utils.AutomatClient" %>
+<%@ page import="com.sirius.web.utils.LogFile" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="lombok.extern.java.Log" %>
+<%@ page import="java.util.Collection" %>
+<%@ page import="java.util.stream.Collectors" %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -43,6 +44,31 @@
     <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css'
           integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
 
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        #tarih , #saat ,#tip{
+            background-position: 10px 10px;
+            background-repeat: no-repeat;
+            width: 90%;
+            font-size: 16px;
+            padding: 5px 5px 5px 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 12px;
+        }
+        #mesaj {
+            background-position: 10px 10px;
+            background-repeat: no-repeat;
+            width: 90%;
+            font-size: 16px;
+            padding: 5px 5px 5px 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 12px;
+        }
+    </style>
 </head>
 
 <body class="">
@@ -65,7 +91,7 @@
                         <p>Kontrol Paneli</p>
                     </a>
                 </li>
-                <li class="nav-item active ">
+                <li class="nav-item ">
                     <a class="nav-link" href="/insertbottle">
                         <i class="material-icons">add</i>
                         <p>Sise Ekleme</p>
@@ -77,7 +103,7 @@
                         <p>Rota Olustur</p>
                     </a>
                 </li>
-                <li class="nav-item  ">
+                <li class="nav-item active">
                     <a class="nav-link" href="/report">
                         <i class="material-icons">report</i>
                         <p>Raporlar</p>
@@ -123,43 +149,144 @@
                 </div>
             </div>
         </nav>
-
         <div class="content">
             <div class="container-fluid">
-                <div class="card" style="width: 60%; margin-left: 20%;">
+                <div class="card" style="width: 100%;">
                     <div class="card-body">
-                        <form class="f1"  method='post' action='insertbottlecontrol'>
-                            <div class="wrap-input100 validate-input" style="width: 40%; margin-left: 30%; margin-top: 3%" data-validate="Barkod girilmesi gereklidir.">
-                                <input class="input100" type="text" name="barcode" placeholder="Urun Barkodu">
-                                <span class="focus-input100"></span>
-                                </span>
-                            </div>
-                            <div class="wrap-input100 validate-input" style="width: 40%; margin-left: 30%; margin-top: 3%" data-validate="Urun markasi girilmesi gereklidir.">
-                                <input class="input100" type="text" name="brand" placeholder="Urun Markasi">
-                                <span class="focus-input100"></span>
-                                </span>
-                            </div>
-                            <div class="wrap-input100 validate-input" style="width: 40%; margin-left: 30%; margin-top: 3%" data-validate="Urun tipi girilmesi gereklidir.">
-                                <input class="input100" type="text" name="type" placeholder="Urun Tipi">
-                                <span class="focus-input100"></span>
-                                </span>
-                            </div>
-                            <div class="wrap-input100 validate-input" style="width: 40%; margin-left: 30%; margin-top: 3%" data-validate="Urun fiyati girilmesi gereklidir.">
-                                <input class="input100" type="number" step="0.01" name="price" placeholder="Urun Fiyati">
-                                <span class="focus-input100"></span>
-                                </span>
-                            </div>
-                            <div class="wrap-input100 validate-input" style="width: 40%; margin-left: 30%; margin-top: 3%" data-validate="Urun hacmi girilmesi gereklidir.">
-                                <input class="input100" type="number" step="0.01" name="volume" placeholder="Urun Hacmi">
-                                <span class="focus-input100"></span>
-                                </span>
-                            </div>
-                            <div class="button-container" style="width: 40%; margin-left: 30%; margin-top: 3%; margin-bottom: 3%">
-                                <button class="login100-form-btn" type="submit">
-                                    Ekle
-                                </button>
-                            </div>
-                        </form>
+                        <div class="table-responsive">
+                            <table  id="myTable" class="table">
+                                <thead style="font-weight:bold">
+                                <tr>
+                                    <th style="font-size:20px">#</th>
+                                    <th style="width:10%;font-size:20px">Tarih</th>
+                                    <th style="font-size:20px">Saat</th>
+                                    <th style="font-size:20px">Mesaj</th>
+                                    <th style="width:5%;font-size:20px">Tip</th>
+                                </tr>
+                                <tr>
+                                    <th> </th>
+                                    <th style="width:10%;"><input type="text" id="tarih" onkeyup="dateFilter()" placeholder="Tarih.."></th>
+                                    <th><input type="text" id="saat" onkeyup="timeFilter()" placeholder="Saat.."></th>
+                                    <th>  <input type="text" id="mesaj" onkeyup="bodyFilter()" placeholder="Mesaj.."></th>
+                                    <th style="width:5%;"><input type="text" id="tip" onkeyup="typeFilter()" placeholder="Tip.."></th>
+                                </tr>
+                                </thead>
+                                <tbody >
+                                <%
+                                    ArrayList<ArrayList<String>> list = LogFile.list();
+                                    int numberList = 1;
+                                    for (int i = 0; i < list.size(); i++) {
+                                        out.println("<tr>");
+                                        out.println("<td>"+numberList+"</td>");
+                                        out.println("<td>"+list.get(i).get(0)+"</td>");
+                                        out.println("<td>"+list.get(i).get(1)+"</td>");
+                                        out.println("<td>"+list.get(i).get(3)+"</td>");
+                                        if (list.get(i).get(2).equals("INFO")) {
+                                            out.println("<td> <button type=\"button\" rel=\"tooltip\" class=\"btn btn-info\">\n" +
+                                                    "                                            INFO\n" +
+                                                    "                                        </button></td>");
+                                        }
+                                        else if(list.get(i).get(2).equals("WARN")){
+                                            out.println("<td> <button type=\"button\" rel=\"tooltip\" class=\"btn btn-warning\">\n" +
+                                                    "                                            WARN\n" +
+                                                    "                                        </button></td>");
+                                        }
+                                        else{
+                                            out.println("<td> <button type=\"button\" rel=\"tooltip\" class=\"btn btn-danger\">\n" +
+                                                    "                                            ERROR\n" +
+                                                    "                                        </button></td>");
+                                        }
+                                        out.println("</tr>");
+                                        numberList++;
+                                    }
+                                %>
+                                <script>
+                                    function dateFilter() {
+                                        var input, filter, table, tr, td, i, txtValue, td1;
+                                        input = document.getElementById("tarih");
+                                        filter = input.value.toUpperCase();
+                                        table = document.getElementById("myTable");
+                                        tr = table.getElementsByTagName("tr");
+                                        for (i = 0; i < tr.length; i++) {
+                                            td = tr[i].getElementsByTagName("td")[1];
+                                            if (td) {
+                                                txtValue = td.textContent || td.innerText;
+                                                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                                    tr[i].style.display = "";
+                                                } else {
+                                                    tr[i].style.display = "none";
+                                                }
+                                            }
+                                        }
+                                    }
+                                    function timeFilter() {
+                                        var input, filter, table, tr, td, i, txtValue, td1;
+                                        input = document.getElementById("saat");
+                                        filter = input.value.toUpperCase();
+                                        table = document.getElementById("myTable");
+                                        tr = table.getElementsByTagName("tr");
+                                        for (i = 0; i < tr.length; i++) {
+                                            td = tr[i].getElementsByTagName("td")[2];
+                                            if (td) {
+                                                txtValue = td.textContent || td.innerText;
+                                                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                                    tr[i].style.display = "";
+                                                } else {
+                                                    tr[i].style.display = "none";
+                                                }
+                                            }
+                                        }
+                                    }
+                                    function typeFilter() {
+                                        var input, filter, table, tr, td, i, txtValue, td1;
+                                        input = document.getElementById("tip");
+                                        filter = input.value.toUpperCase();
+                                        table = document.getElementById("myTable");
+                                        tr = table.getElementsByTagName("tr");
+                                        for (i = 0; i < tr.length; i++) {
+                                            td = tr[i].getElementsByTagName("td")[4];
+                                            if (td) {
+                                                txtValue = td.textContent || td.innerText;
+                                                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                                    tr[i].style.display = "";
+                                                } else {
+                                                    tr[i].style.display = "none";
+                                                }
+                                            }
+                                        }
+                                    }
+                                    function bodyFilter() {
+                                        var input, filter, table, tr, td, i, txtValue, td1;
+                                        input = document.getElementById("mesaj");
+                                        filter = input.value.toUpperCase();
+                                        table = document.getElementById("myTable");
+                                        tr = table.getElementsByTagName("tr");
+                                        for (i = 0; i < tr.length; i++) {
+                                            td = tr[i].getElementsByTagName("td")[3];
+                                            if (td) {
+                                                txtValue = td.textContent || td.innerText;
+                                                var wordList = filter.split(" ");
+                                                //alert(wordList.length);
+                                                var addWord = true;
+                                                for (var k = 0; k< wordList.length; k++) {
+                                                    if (txtValue.toUpperCase().indexOf(wordList[k]) < 0) {
+                                                        addWord = false;
+                                                        //alert("Burda");
+                                                        break;
+                                                    }
+                                                }
+                                                if (addWord) {
+                                                    tr[i].style.display = "";
+                                                } else {
+                                                    tr[i].style.display = "none";
+                                                }
+                                            }
+                                        }
+                                    }
+                                </script>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

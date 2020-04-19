@@ -1,7 +1,8 @@
-<%@ page import="java.util.List" %>
-<%@ page import="com.sirius.web.model.Automat" %>
-<%@ page import="com.sirius.web.service.AutomatService" %>
-<%@ page import="com.sirius.web.utils.AutomatClient" %>
+<%@ page import="com.sirius.web.utils.LogFile" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="lombok.extern.java.Log" %>
+<%@ page import="java.util.Collection" %>
+<%@ page import="java.util.stream.Collectors" %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -43,6 +44,22 @@
     <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css'
           integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
 
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        #otomatid , #otomatlokasyon ,#sayi{
+            background-position: 10px 10px;
+            background-repeat: no-repeat;
+            width: 90%;
+            font-size: 16px;
+            padding: 5px 5px 5px 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 12px;
+        }
+    </style>
 </head>
 
 <body class="">
@@ -65,7 +82,7 @@
                         <p>Kontrol Paneli</p>
                     </a>
                 </li>
-                <li class="nav-item active ">
+                <li class="nav-item ">
                     <a class="nav-link" href="/insertbottle">
                         <i class="material-icons">add</i>
                         <p>Sise Ekleme</p>
@@ -77,13 +94,13 @@
                         <p>Rota Olustur</p>
                     </a>
                 </li>
-                <li class="nav-item  ">
+                <li class="nav-item ">
                     <a class="nav-link" href="/report">
                         <i class="material-icons">report</i>
                         <p>Raporlar</p>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item active">
                     <a class="nav-link" href="/data">
                         <i class="material-icons">assessment</i>
                         <p>Veriler</p>
@@ -123,43 +140,99 @@
                 </div>
             </div>
         </nav>
-
         <div class="content">
             <div class="container-fluid">
-                <div class="card" style="width: 60%; margin-left: 20%;">
+                <div class="card" style="width: 100%;">
                     <div class="card-body">
-                        <form class="f1"  method='post' action='insertbottlecontrol'>
-                            <div class="wrap-input100 validate-input" style="width: 40%; margin-left: 30%; margin-top: 3%" data-validate="Barkod girilmesi gereklidir.">
-                                <input class="input100" type="text" name="barcode" placeholder="Urun Barkodu">
-                                <span class="focus-input100"></span>
-                                </span>
-                            </div>
-                            <div class="wrap-input100 validate-input" style="width: 40%; margin-left: 30%; margin-top: 3%" data-validate="Urun markasi girilmesi gereklidir.">
-                                <input class="input100" type="text" name="brand" placeholder="Urun Markasi">
-                                <span class="focus-input100"></span>
-                                </span>
-                            </div>
-                            <div class="wrap-input100 validate-input" style="width: 40%; margin-left: 30%; margin-top: 3%" data-validate="Urun tipi girilmesi gereklidir.">
-                                <input class="input100" type="text" name="type" placeholder="Urun Tipi">
-                                <span class="focus-input100"></span>
-                                </span>
-                            </div>
-                            <div class="wrap-input100 validate-input" style="width: 40%; margin-left: 30%; margin-top: 3%" data-validate="Urun fiyati girilmesi gereklidir.">
-                                <input class="input100" type="number" step="0.01" name="price" placeholder="Urun Fiyati">
-                                <span class="focus-input100"></span>
-                                </span>
-                            </div>
-                            <div class="wrap-input100 validate-input" style="width: 40%; margin-left: 30%; margin-top: 3%" data-validate="Urun hacmi girilmesi gereklidir.">
-                                <input class="input100" type="number" step="0.01" name="volume" placeholder="Urun Hacmi">
-                                <span class="focus-input100"></span>
-                                </span>
-                            </div>
-                            <div class="button-container" style="width: 40%; margin-left: 30%; margin-top: 3%; margin-bottom: 3%">
-                                <button class="login100-form-btn" type="submit">
-                                    Ekle
-                                </button>
-                            </div>
-                        </form>
+                        <div class="table-responsive">
+                            <table  id="myTable" class="table">
+                                <thead style="font-weight:bold">
+                                <tr>
+                                    <th style="width:5%;font-size:20px">#</th>
+                                    <th style="width:15%;font-size:20px">Otomat ID</th>
+                                    <th style="width:15%;font-size:20px">Otomat Lokasyonu</th>
+                                    <th style="width:15%;font-size:20px">Atilan Sise Sayisi</th>
+                                </tr>
+                                <tr>
+                                    <th> </th>
+                                    <th style="width:10%;"><input type="text" id="otomatid" onkeyup="idFilter()" placeholder="ID.."></th>
+                                    <th><input type="text" id="otomatlokasyon" onkeyup="lokasyonFilter()" placeholder="Lokasyon.."></th>
+                                    <th>  <input type="text" id="sayi" onkeyup="sayiFilter()" placeholder="Sayi.."></th>
+                                </tr>
+                                </thead>
+                                <tbody >
+                                <%
+                                    ArrayList<ArrayList<String>> list = LogFile.listAutomats();
+                                    int numberList = 1;
+                                    for (int i = 0; i < list.size(); i++) {
+                                        out.println("<tr>");
+                                        out.println("<td>"+numberList+"</td>");
+                                        out.println("<td>"+list.get(i).get(0)+"</td>");
+                                        out.println("<td>"+list.get(i).get(1)+"</td>");
+                                        out.println("<td>"+list.get(i).get(2)+"</td>");
+                                        out.println("</tr>");
+                                        numberList++;
+                                    }
+                                %>
+                                <script>
+                                    function idFilter() {
+                                        var input, filter, table, tr, td, i, txtValue, td1;
+                                        input = document.getElementById("otomatid");
+                                        filter = input.value.toUpperCase();
+                                        table = document.getElementById("myTable");
+                                        tr = table.getElementsByTagName("tr");
+                                        for (i = 0; i < tr.length; i++) {
+                                            td = tr[i].getElementsByTagName("td")[1];
+                                            if (td) {
+                                                txtValue = td.textContent || td.innerText;
+                                                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                                    tr[i].style.display = "";
+                                                } else {
+                                                    tr[i].style.display = "none";
+                                                }
+                                            }
+                                        }
+                                    }
+                                    function lokasyonFilter() {
+                                        var input, filter, table, tr, td, i, txtValue, td1;
+                                        input = document.getElementById("otomatlokasyon");
+                                        filter = input.value.toUpperCase();
+                                        table = document.getElementById("myTable");
+                                        tr = table.getElementsByTagName("tr");
+                                        for (i = 0; i < tr.length; i++) {
+                                            td = tr[i].getElementsByTagName("td")[2];
+                                            if (td) {
+                                                txtValue = td.textContent || td.innerText;
+                                                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                                    tr[i].style.display = "";
+                                                } else {
+                                                    tr[i].style.display = "none";
+                                                }
+                                            }
+                                        }
+                                    }
+                                    function sayiFilter() {
+                                        var input, filter, table, tr, td, i, txtValue, td1;
+                                        input = document.getElementById("sayi");
+                                        filter = input.value.toUpperCase();
+                                        table = document.getElementById("myTable");
+                                        tr = table.getElementsByTagName("tr");
+                                        for (i = 0; i < tr.length; i++) {
+                                            td = tr[i].getElementsByTagName("td")[3];
+                                            if (td) {
+                                                txtValue = td.textContent || td.innerText;
+                                                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                                    tr[i].style.display = "";
+                                                } else {
+                                                    tr[i].style.display = "none";
+                                                }
+                                            }
+                                        }
+                                    }
+                                </script>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -179,13 +252,13 @@
         <script src="js/plugins/jquery.validate.min.js"></script>
         <!-- Plugin for the Wizard, full documentation here: https://github.com/VinceG/twitter-bootstrap-wizard -->
         <script src="js/plugins/jquery.bootstrap-wizard.js"></script>
-        <!--	Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
+        <!--   Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
         <script src="js/plugins/bootstrap-selectpicker.js"></script>
         <!--  Plugin for the DateTimePicker, full documentation here: https://eonasdan.github.io/bootstrap-datetimepicker/ -->
         <script src="js/plugins/bootstrap-datetimepicker.min.js"></script>
         <!--  DataTables.net Plugin, full documentation here: https://datatables.net/  -->
         <script src="js/plugins/jquery.dataTables.min.js"></script>
-        <!--	Plugin for Tags, full documentation here: https://github.com/bootstrap-tagsinput/bootstrap-tagsinputs  -->
+        <!--   Plugin for Tags, full documentation here: https://github.com/bootstrap-tagsinput/bootstrap-tagsinputs  -->
         <script src="js/plugins/bootstrap-tagsinput.js"></script>
         <!-- Plugin for Fileupload, full documentation here: http://www.jasny.net/bootstrap/javascript/#fileinput -->
         <script src="js/plugins/jasny-bootstrap.min.js"></script>

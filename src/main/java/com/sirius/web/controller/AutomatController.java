@@ -4,6 +4,9 @@ import com.sirius.web.model.Automat;
 import com.sirius.web.model.Bottle;
 import com.sirius.web.service.AutomatService;
 import com.sirius.web.service.BottleService;
+import com.sirius.web.utils.Utility;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +19,7 @@ import java.util.List;
 @RequestMapping("/rest/automats")
 public class AutomatController implements Serializable {
 
+    private static Logger logger = LoggerFactory.getLogger(AutomatController.class);
     private final AutomatService automatService;
     private final BottleService bottleService;
 
@@ -26,13 +30,14 @@ public class AutomatController implements Serializable {
     }
 
     @GetMapping("listAutomats")
-    public ResponseEntity<List<Automat>> findAll() {
+    public ResponseEntity<List<Automat>> findAllAutomats() {
         final List<Automat> automats = automatService.getAllAutomats();
 
         if(automats == null) {
+            logger.error("&" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Registered automats could not be listed");
             return new ResponseEntity<List<Automat>>(HttpStatus.NOT_FOUND);
         }
-
+        logger.info("&" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***List of registered automats : " + automats);
         return new ResponseEntity<List<Automat>>(automats, HttpStatus.OK);
     }
 
@@ -41,8 +46,10 @@ public class AutomatController implements Serializable {
 
         if (automat.getId() != null && automat.getId().length() != 0 && !automatService.exists(automat.getId())) {
             final Automat dbautomat = automatService.createAutomat(automat);
+            logger.info("$" + dbautomat.getId() + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***New automat has been created. Information of the new automat : " + dbautomat);
             return new ResponseEntity<Automat>(dbautomat, HttpStatus.CREATED);
         } else {
+            logger.error("$" + automat.getId() + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Failed to create new automat");
             return new ResponseEntity<Automat>(HttpStatus.BAD_REQUEST);
         }
 
@@ -50,13 +57,12 @@ public class AutomatController implements Serializable {
 
     @GetMapping("/{id}")
     public ResponseEntity<Automat> getAutomat(@PathVariable String id) {
-        try {
-            final Automat dbautomat = automatService.findAutomatById(id);
-            if (dbautomat == null) {
-                return new ResponseEntity<Automat>(HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<Automat>(dbautomat, HttpStatus.OK);
-        } catch (Exception e) {
+        final Automat dbAutomat = automatService.findAutomatById(id);
+        if (dbAutomat != null) {
+            logger.info("$" + id + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Automat information : " + dbAutomat);
+            return new ResponseEntity<Automat>(dbAutomat, HttpStatus.OK);
+        } else {
+            logger.error("$" + id + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Automat information not found");
             return new ResponseEntity<Automat>(HttpStatus.NOT_FOUND);
         }
     }
@@ -67,44 +73,49 @@ public class AutomatController implements Serializable {
         final boolean isExist = automatService.exists(automat.getId());
         if (isExist) {
             automatService.updateAutomat(automat);
+            logger.info("$" + automat.getId() + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Automat information has been updated");
             return new ResponseEntity<Automat>(automat, HttpStatus.OK);
         } else {
+            logger.error("$" + automat.getId() + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Not found in database");
             return new ResponseEntity<Automat>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @DeleteMapping("deleteAutomat")
     public ResponseEntity deleteAutomat(@RequestParam String id){
-        try {
-            boolean ok = automatService.deleteAutomat(id);
-            return new ResponseEntity(ok, HttpStatus.OK);
-        } catch (RuntimeException e){
-            return new ResponseEntity(false, HttpStatus.UNAUTHORIZED);
-        } catch (Exception e){
+        if(automatService.exists(id)) {
+            automatService.deleteAutomat(id);
+            logger.info("$" + id + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***The automat has been deleted");
+            return new ResponseEntity(true, HttpStatus.OK);
+        } else {
+            logger.error("$" + id + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Not found in database");
             return new ResponseEntity(false, HttpStatus.BAD_REQUEST);
         }
     }
 
     @DeleteMapping("deleteAll")
     public ResponseEntity deleteAll() {
-        boolean ok = automatService.deleteAll();
-        return new ResponseEntity(ok, HttpStatus.NO_CONTENT);
+        automatService.deleteAll();
+        logger.info("&" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***All automats have been deleted");
+        return new ResponseEntity(true, HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("changeCapacity/{id}/{barcode}")
-    public ResponseEntity changeCapacity(@PathVariable String id, @PathVariable String barcode) {
+    public ResponseEntity changeCapacity(@PathVariable String automatId, @PathVariable String barcode) {
 
-        boolean isDbAutomat = automatService.exists(id);
+        boolean isDbAutomat = automatService.exists(automatId);
         boolean isDbBottle = bottleService.exists(barcode);
 
         if (!isDbAutomat || !isDbBottle) {
+            logger.error("$" + automatId + " %" + barcode + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Not found in database");
             return new ResponseEntity(false, HttpStatus.BAD_REQUEST);
         }
         else {
-            Automat getAutomatFromDb = automatService.findAutomatById(id);
+            Automat getAutomatFromDb = automatService.findAutomatById(automatId);
             Bottle getBottleFromDb = bottleService.findBottleByBarcode(barcode);
 
             if(!getAutomatFromDb.isActive()) {
+                logger.error("$" + automatId + " %" + barcode + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Automat is deactive");
                 return new ResponseEntity(false, HttpStatus.BAD_REQUEST);
             }
 
@@ -114,11 +125,13 @@ public class AutomatController implements Serializable {
 
             if(getAutomatFromDb.getCapacity() <= 100.00) {
                 automatService.updateAutomat(getAutomatFromDb);
+                logger.info("$" + automatId + " %" + barcode + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***The new capacity of Automat : " + getAutomatFromDb.getCapacity());
                 return new ResponseEntity(true, HttpStatus.OK);
             }
             else {
                 getAutomatFromDb.setActive(false);
                 automatService.updateAutomat(getAutomatFromDb);
+                logger.error("$" + automatId + " %" + barcode + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Automat's capacity is full");
                 return new ResponseEntity(false, HttpStatus.BAD_REQUEST);
             }
         }

@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class AutomatClient {
 
     public static List<Automat> listAutomats() throws UnirestException, ParseException {
-        HttpResponse httpResponse = Unirest.get("http://localhost:8080/rest/automats/listAutomats").header("Content-Type", "application/json").asJson();
+        HttpResponse httpResponse = Unirest.get("https://siriusrecyclingproject.herokuapp.com/rest/automats/listAutomats").header("Content-Type", "application/json").asJson();
         String jsonStr = httpResponse.getBody().toString();
         JSONArray jsonarray = new JSONArray(jsonStr);
         List<Automat> automats = new ArrayList<>();
@@ -27,6 +27,7 @@ public class AutomatClient {
             automat.setId(jsonobject.getString("id"));
             automat.setCapacity((float) jsonobject.getDouble("capacity"));
             automat.setActive(jsonobject.getBoolean("active"));
+            automat.setOverallVolume((float) jsonobject.getDouble("overallVolume"));
             automat.setNumberOfBottles(jsonobject.getInt("numberOfBottles"));
             try {
                 JSONObject locOj = jsonobject.getJSONObject("location");
