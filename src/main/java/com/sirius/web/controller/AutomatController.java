@@ -101,21 +101,21 @@ public class AutomatController implements Serializable {
     }
 
     @PutMapping("changeCapacity/{id}/{barcode}")
-    public ResponseEntity changeCapacity(@PathVariable String automatId, @PathVariable String barcode) {
+    public ResponseEntity changeCapacity(@PathVariable String id, @PathVariable String barcode) {
 
-        boolean isDbAutomat = automatService.exists(automatId);
+        boolean isDbAutomat = automatService.exists(id);
         boolean isDbBottle = bottleService.exists(barcode);
 
         if (!isDbAutomat || !isDbBottle) {
-            logger.error("$" + automatId + " %" + barcode + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Not found in database");
+            logger.error("$" + id + " %" + barcode + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Not found in database");
             return new ResponseEntity(false, HttpStatus.BAD_REQUEST);
         }
         else {
-            Automat getAutomatFromDb = automatService.findAutomatById(automatId);
+            Automat getAutomatFromDb = automatService.findAutomatById(id);
             Bottle getBottleFromDb = bottleService.findBottleByBarcode(barcode);
 
             if(!getAutomatFromDb.isActive()) {
-                logger.error("$" + automatId + " %" + barcode + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Automat is deactive");
+                logger.error("$" + id + " %" + barcode + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Automat is deactive");
                 return new ResponseEntity(false, HttpStatus.BAD_REQUEST);
             }
 
@@ -125,13 +125,13 @@ public class AutomatController implements Serializable {
 
             if(getAutomatFromDb.getCapacity() <= 100.00) {
                 automatService.updateAutomat(getAutomatFromDb);
-                logger.info("$" + automatId + " %" + barcode + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***The new capacity of Automat : " + getAutomatFromDb.getCapacity());
+                logger.info("$" + id + " %" + barcode + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***The new capacity of Automat : " + getAutomatFromDb.getCapacity());
                 return new ResponseEntity(true, HttpStatus.OK);
             }
             else {
                 getAutomatFromDb.setActive(false);
                 automatService.updateAutomat(getAutomatFromDb);
-                logger.error("$" + automatId + " %" + barcode + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Automat's capacity is full");
+                logger.error("$" + id + " %" + barcode + " &" + Utility.trace(Thread.currentThread().getStackTrace()) + " ***Automat's capacity is full");
                 return new ResponseEntity(false, HttpStatus.BAD_REQUEST);
             }
         }
